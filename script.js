@@ -45,6 +45,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const arrheniusCanvas = document.getElementById("arrhenius-canvas");
     const permeabilityCanvas = document.getElementById("permeability-canvas");
 
+    // Challenge Game UI Elements
+    const selectChallenge = document.getElementById("select-challenge");
+    const challengeDesc = document.getElementById("challenge-desc");
+    const challengeObjectives = document.getElementById("challenge-objectives");
+    const victoryModal = document.getElementById("victory-modal");
+    const victoryMessage = document.getElementById("victory-message");
+    const victoryLesson = document.getElementById("victory-lesson");
+    const btnCloseVictory = document.getElementById("btn-close-victory");
+
     // Grid and constants
     const L = 0.02; // puck length (m)
     const Nx = 40;  // grid points
@@ -76,6 +85,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let animId = null;
     let t = 0.0;
     let maxTime = 30.0;
+    let activeChallenge = "none";
     let timeStepsRun = 0;
     let activeField = "temp"; // temp, caffeine, bitter, depletion
 
@@ -137,6 +147,35 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     btnReset.addEventListener("click", resetSimulation);
+
+    // Challenge selector changed
+    selectChallenge.addEventListener("change", (e) => {
+        activeChallenge = e.target.value;
+        const challenge = challengeData[activeChallenge];
+        
+        challengeDesc.textContent = challenge.desc;
+        
+        if (activeChallenge === "none") {
+            challengeObjectives.style.display = "none";
+        } else {
+            challengeObjectives.style.display = "block";
+            // Populate objective names
+            document.getElementById("obj-1").innerHTML = `<span class="obj-bullet" style="color: var(--accent-red)">🔴</span> ${challenge.objectives[0]}`;
+            document.getElementById("obj-2").innerHTML = `<span class="obj-bullet" style="color: var(--accent-red)">🔴</span> ${challenge.objectives[1]}`;
+            document.getElementById("obj-3").innerHTML = `<span class="obj-bullet" style="color: var(--accent-red)">🔴</span> ${challenge.objectives[2]}`;
+        }
+        
+        // Reset the simulation to apply locks
+        resetSimulation();
+    });
+
+    // Close Victory modal
+    btnCloseVictory.addEventListener("click", () => {
+        victoryModal.style.display = "none";
+        // Reset back to Free Play
+        selectChallenge.value = "none";
+        selectChallenge.dispatchEvent(new Event("change"));
+    });
 
     viewButtons.forEach(btn => {
         btn.addEventListener("click", (e) => {
@@ -202,6 +241,10 @@ document.addEventListener("DOMContentLoaded", () => {
         Ea1 = parseFloat(sliderEa1.value) * 1000.0;
         Ea2 = parseFloat(sliderEa2.value) * 1000.0;
         maxTime = parseFloat(sliderMaxTime.value);
+
+        // Setup active challenge constraints
+        const challenge = challengeData[activeChallenge];
+        challenge.setup();
 
         // Size canvases dynamically before drawing
         resizeCanvases();
@@ -422,6 +465,30 @@ document.addEventListener("DOMContentLoaded", () => {
         // Fade in crema layer as coffee pours
         if (totalWaterVolume > 2.0) {
             cupCrema.style.opacity = Math.min(0.9, (totalWaterVolume - 2.0) / 10.0);
+        }
+
+        // Validate challenge objectives
+        if (activeChallenge !== "none") {
+            const challenge = challengeData[activeChallenge];
+            const validation = challenge.validate(t, totalWaterVolume, yieldCaffeine, yieldBitter);
+            
+            const bullets = [
+                document.getElementById("obj-1"),
+                document.getElementById("obj-2"),
+                document.getElementById("obj-3")
+            ];
+            
+            for (let bIdx = 0; bIdx < 3; bIdx++) {
+                if (validation.status[bIdx]) {
+                    bullets[bIdx].innerHTML = `<span class="obj-bullet" style="color: var(--accent-green)">🟢</span> <del>${challenge.objectives[bIdx]}</del>`;
+                } else {
+                    bullets[bIdx].innerHTML = `<span class="obj-bullet" style="color: var(--accent-red)">🔴</span> ${challenge.objectives[bIdx]}`;
+                }
+            }
+            
+            if (validation.success) {
+                triggerVictory(challenge.lesson);
+            }
         }
 
         // Draw visuals
@@ -881,4 +948,113 @@ document.addEventListener("DOMContentLoaded", () => {
         drawArrheniusCurve();
         drawPermeabilityCurve();
     });
+
+    // Challenge Game Configuration Metadata
+    const challengeData = {
+        none: {
+            desc: "Free Play Mode: Feel free to adjust any sliders, experiment with viscosity, temperature, and kinetics to see how the fields behave!",
+            objectives: [],
+            setup: () => { unlockAllSliders(); }
+        },
+        kinetics: {
+            desc: "The Selectivity Dilemma (Kinetics): Extract at least 85% of Caffeine, but keep Bitterness below 30% in under 30 seconds. Hint: Adjust the brewing temperature to leverage the difference in activation energies.",
+            objectives: [
+                "Caffeine Yield >= 85%",
+                "Bitterness Yield < 30%",
+                "Brew Time <= 30.0s"
+            ],
+            setup: () => {
+                unlockAllSliders();
+                // lock brew time to 30s
+                sliderMaxTime.value = 30;
+                sliderMaxTime.dispatchEvent(new Event("input"));
+                lockSlider(sliderMaxTime);
+            },
+            validate: (t, vol, yieldCaff, yieldBit) => {
+                const c1 = yieldCaff >= 85.0;
+                const c2 = yieldBit < 30.0;
+                const c3 = t <= 30.0;
+                return {
+                    status: [c1, c2, c3],
+                    success: c1 && c2 && c3 && !isRunning && t > 0
+                };
+            },
+            lesson: "Caffeine has a lower activation energy (Ea = 30 kJ/mol) than bitter compounds (Ea = 55 kJ/mol). By brewing at a moderate-low temperature (e.g. 85°C - 88°C), the rate constant for caffeine remains high, while the rate constant for bitterness is heavily suppressed, enabling selective mass transfer!"
+        },
+        porous: {
+            desc: "The Turkish Choke (Porous Flow): Brew at least 30 mL of coffee using the Fine (Turkish style) grind. Hint: Turkish coffee creates very high flow resistance. You will need to scale the brew time, reduce tamping (to increase porosity), or increase pressure.",
+            objectives: [
+                "Grind size set to Fine (Turkish)",
+                "Brewed Volume >= 30.0 mL",
+                "Brew Time >= 60.0s (requires scaling time)"
+            ],
+            setup: () => {
+                unlockAllSliders();
+                selectGrind.value = "fine";
+                selectGrind.dispatchEvent(new Event("change"));
+                lockSlider(selectGrind);
+            },
+            validate: (t, vol, yieldCaff, yieldBit) => {
+                const c1 = selectGrind.value === "fine";
+                const c2 = vol >= 30.0;
+                const c3 = t >= 60.0;
+                return {
+                    status: [c1, c2, c3],
+                    success: c1 && c2 && c3 && !isRunning && t > 0
+                };
+            },
+            lesson: "Turkish coffee uses very fine particles, which packed tightly result in extremely low permeability. To achieve a realistic yield, we must increase the time scale of the simulation. This illustrates the non-linear relationship between material properties (permeability), boundary conditions, and time scales in transport phenomena."
+        },
+        barrier: {
+            desc: "The Bitterness Sabotage (Theory): Brew a sweet espresso (Caffeine >= 85%, Bitterness < 30%) at exactly 100°C water temperature. Hint: At 100°C, bitterness extracts rapidly. You cannot change temperature or pressure. You must go to the 'Theory & Governing Equations' panel and increase the activation energy barrier (Ea) of the bitter compounds to sabotage the chemical reaction!",
+            objectives: [
+                "Inlet Temperature = 100°C",
+                "Caffeine Yield >= 85%",
+                "Bitterness Yield < 30%"
+            ],
+            setup: () => {
+                unlockAllSliders();
+                sliderTemp.value = 100;
+                sliderTemp.dispatchEvent(new Event("input"));
+                lockSlider(sliderTemp);
+                sliderPressure.value = 9;
+                sliderPressure.dispatchEvent(new Event("input"));
+                lockSlider(sliderPressure);
+            },
+            validate: (t, vol, yieldCaff, yieldBit) => {
+                const c1 = parseFloat(sliderTemp.value) === 100.0;
+                const c2 = yieldCaff >= 85.0;
+                const c3 = yieldBit < 30.0;
+                return {
+                    status: [c1, c2, c3],
+                    success: c1 && c2 && c3 && !isRunning && t > 0
+                };
+            },
+            lesson: "Activation energy (Ea) represents the height of the energy barrier that reactants must overcome to dissolve or react. By increasing the activation energy of bitter compounds (e.g. to 70+ kJ/mol), you raise the barrier, exponentially slowing down their extraction rate constant even at high temperatures (100°C)!"
+        }
+    };
+
+    function lockSlider(element) {
+        element.disabled = true;
+        element.closest(".control-group")?.classList.add("locked");
+    }
+
+    function unlockAllSliders() {
+        const elements = [sliderPressure, sliderTemp, selectGrind, sliderTamping, sliderMaxTime, sliderEa1, sliderEa2, sliderK0];
+        elements.forEach(el => {
+            el.disabled = false;
+            el.closest(".control-group")?.classList.remove("locked");
+        });
+    }
+
+    function triggerVictory(lessonText) {
+        isRunning = false;
+        if (animId) cancelAnimationFrame(animId);
+        btnStart.textContent = "▶ Start Brew";
+        btnStart.classList.remove("btn-danger");
+        
+        victoryMessage.textContent = `Congratulations! You solved the '${challengeData[activeChallenge].desc.split(":")[0]}' kinetics/flow puzzle!`;
+        victoryLesson.innerHTML = `<strong>Lesson:</strong> ${lessonText}`;
+        victoryModal.style.display = "flex";
+    }
 });

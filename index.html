@@ -25,105 +25,136 @@
 
         <!-- Main Workspace -->
         <main class="app-workspace">
-            <!-- Left Column: Controls -->
-            <section class="control-panel glass-card">
-                <h2><span class="icon">⚙️</span> Process Parameters</h2>
-                <div class="control-group">
-                    <div class="slider-header">
-                        <label for="param-pressure">Pump Pressure (Observable)</label>
-                        <span class="slider-value" id="val-pressure">9.0 bar</span>
+            <!-- Left Column Container -->
+            <div class="left-column">
+                <!-- Left Column: Controls -->
+                <section class="control-panel glass-card">
+                    <h2><span class="icon">⚙️</span> Process Parameters</h2>
+                    <div class="control-group">
+                        <div class="slider-header">
+                            <label for="param-pressure">Pump Pressure (Observable)</label>
+                            <span class="slider-value" id="val-pressure">9.0 bar</span>
+                        </div>
+                        <input type="range" id="param-pressure" min="1.0" max="15.0" step="0.5" value="9.0">
+                        <div class="slider-labels">
+                            <span>1 bar (Gravity)</span>
+                            <span>9 bar (Espresso)</span>
+                            <span>15 bar</span>
+                        </div>
                     </div>
-                    <input type="range" id="param-pressure" min="1.0" max="15.0" step="0.5" value="9.0">
-                    <div class="slider-labels">
-                        <span>1 bar (Gravity)</span>
-                        <span>9 bar (Espresso)</span>
-                        <span>15 bar</span>
-                    </div>
-                </div>
 
-                <div class="control-group">
-                    <div class="slider-header">
-                        <label for="param-temp">Inlet Water Temp (Observable)</label>
-                        <span class="slider-value" id="val-temp">93 °C</span>
+                    <div class="control-group">
+                        <div class="slider-header">
+                            <label for="param-temp">Inlet Water Temp (Observable)</label>
+                            <span class="slider-value" id="val-temp">93 °C</span>
+                        </div>
+                        <input type="range" id="param-temp" min="70" max="100" step="1" value="93">
+                        <div class="slider-labels">
+                            <span>70°C (Cold/Sour)</span>
+                            <span>93°C (Optimal)</span>
+                            <span>100°C (Overheated)</span>
+                        </div>
                     </div>
-                    <input type="range" id="param-temp" min="70" max="100" step="1" value="93">
-                    <div class="slider-labels">
-                        <span>70°C (Cold/Sour)</span>
-                        <span>93°C (Optimal)</span>
-                        <span>100°C (Overheated)</span>
-                    </div>
-                </div>
 
-                <div class="control-group">
-                    <div class="slider-header">
-                        <label for="param-grind">Grind Size (Permeability & Surface Area)</label>
-                        <span class="slider-value" id="val-grind">Medium</span>
+                    <div class="control-group">
+                        <div class="slider-header">
+                            <label for="param-grind">Grind Size (Permeability & Surface Area)</label>
+                            <span class="slider-value" id="val-grind">Medium</span>
+                        </div>
+                        <select id="param-grind">
+                            <option value="coarse">Coarse (French Press style) - Fast Flow</option>
+                            <option value="medium" selected>Medium (Standard Espresso) - Balanced Flow</option>
+                            <option value="fine">Fine (Turkish style) - Slow/Choked Flow</option>
+                        </select>
                     </div>
-                    <select id="param-grind">
-                        <option value="coarse">Coarse (French Press style) - Fast Flow</option>
-                        <option value="medium" selected>Medium (Standard Espresso) - Balanced Flow</option>
-                        <option value="fine">Fine (Turkish style) - Slow/Choked Flow</option>
-                    </select>
-                </div>
 
-                <div class="control-group">
-                    <div class="slider-header">
-                        <label for="param-tamping">Tamping Force (Puck Porosity)</label>
-                        <span class="slider-value" id="val-tamping">15 kg</span>
+                    <div class="control-group">
+                        <div class="slider-header">
+                            <label for="param-tamping">Tamping Force (Puck Porosity)</label>
+                            <span class="slider-value" id="val-tamping">15 kg</span>
+                        </div>
+                        <input type="range" id="param-tamping" min="5" max="30" step="1" value="15">
+                        <div class="slider-labels">
+                            <span>5 kg (Loose)</span>
+                            <span>15 kg (Standard)</span>
+                            <span>30 kg (Compacted)</span>
+                        </div>
                     </div>
-                    <input type="range" id="param-tamping" min="5" max="30" step="1" value="15">
-                    <div class="slider-labels">
-                        <span>5 kg (Loose)</span>
-                        <span>15 kg (Standard)</span>
-                        <span>30 kg (Compacted)</span>
+                    <div class="control-group">
+                        <div class="slider-header">
+                            <label for="param-maxtime">Max Brew Time (Observable Limit)</label>
+                            <span class="slider-value" id="val-maxtime">30 s</span>
+                        </div>
+                        <input type="range" id="param-maxtime" min="10" max="120" step="5" value="30">
+                        <div class="slider-labels">
+                            <span>10 s (Short)</span>
+                            <span>30 s (Standard)</span>
+                            <span>120 s (Long/Turkish)</span>
+                        </div>
                     </div>
-                <div class="control-group">
-                    <div class="slider-header">
-                        <label for="param-maxtime">Max Brew Time (Observable Limit)</label>
-                        <span class="slider-value" id="val-maxtime">30 s</span>
-                    </div>
-                    <input type="range" id="param-maxtime" min="10" max="120" step="5" value="30">
-                    <div class="slider-labels">
-                        <span>10 s (Short)</span>
-                        <span>30 s (Standard)</span>
-                        <span>120 s (Long/Turkish)</span>
-                    </div>
-                </div>
 
-                <div class="action-buttons">
-                    <button id="btn-start" class="btn btn-primary">▶ Start Brew</button>
-                    <button id="btn-reset" class="btn btn-secondary">🔄 Reset</button>
-                </div>
+                    <div class="action-buttons">
+                        <button id="btn-start" class="btn btn-primary">▶ Start Brew</button>
+                        <button id="btn-reset" class="btn btn-secondary">🔄 Reset</button>
+                    </div>
 
-                <!-- Simulation Info / Stats -->
-                <div class="stats-panel">
-                    <h3>📊 Real-time Outputs</h3>
-                    <div class="stat-row">
-                        <span>Brew Time:</span>
-                        <span id="stat-time" class="mono">0.0 s</span>
+                    <!-- Simulation Info / Stats -->
+                    <div class="stats-panel">
+                        <h3>📊 Real-time Outputs</h3>
+                        <div class="stat-row">
+                            <span>Brew Time:</span>
+                            <span id="stat-time" class="mono">0.0 s</span>
+                        </div>
+                        <div class="stat-row">
+                            <span>Flow Rate:</span>
+                            <span id="stat-flow" class="mono">0.00 mL/s</span>
+                        </div>
+                        <div class="stat-row">
+                            <span>Total Volume:</span>
+                            <span id="stat-volume" class="mono">0.0 mL</span>
+                        </div>
+                        <div class="stat-row">
+                            <span>Caffeine Yield (Desired):</span>
+                            <span id="stat-yield1" class="mono text-caffeine">0.0 %</span>
+                        </div>
+                        <div class="stat-row">
+                            <span>Bitter Yield (Undesired):</span>
+                            <span id="stat-yield2" class="mono text-bitter">0.0 %</span>
+                        </div>
+                        <div class="stat-row">
+                            <span>Taste Profile:</span>
+                            <span id="stat-taste" class="taste-badge taste-sour">Dry</span>
+                        </div>
                     </div>
-                    <div class="stat-row">
-                        <span>Flow Rate:</span>
-                        <span id="stat-flow" class="mono">0.00 mL/s</span>
+                </section>
+
+                <!-- Left Column: Classroom Challenges -->
+                <section class="challenge-panel glass-card" style="margin-top: 1.5rem;">
+                    <h2><span class="icon">🏆</span> Classroom Challenges</h2>
+                    <div class="control-group" style="margin-bottom: 0.75rem;">
+                        <label for="select-challenge" style="font-size: 0.9rem; font-weight: 500; display: block; margin-bottom: 0.5rem;">Select Challenge:</label>
+                        <select id="select-challenge">
+                            <option value="none">None (Free Play Mode)</option>
+                            <option value="kinetics">1. The Selectivity Dilemma (Kinetics)</option>
+                            <option value="porous">2. The Turkish Choke (Porous Flow)</option>
+                            <option value="barrier">3. The Bitterness Sabotage (Theory)</option>
+                        </select>
                     </div>
-                    <div class="stat-row">
-                        <span>Total Volume:</span>
-                        <span id="stat-volume" class="mono">0.0 mL</span>
+                    
+                    <div id="challenge-desc" class="challenge-desc" style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.4; background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.03); padding: 0.75rem; border-radius: 8px;">
+                        Free Play Mode: Feel free to adjust any sliders, experiment with viscosity, temperature, and kinetics to see how the fields behave!
                     </div>
-                    <div class="stat-row">
-                        <span>Caffeine Yield (Desired):</span>
-                        <span id="stat-yield1" class="mono text-caffeine">0.0 %</span>
+
+                    <div id="challenge-objectives" class="challenge-objectives" style="display: none; margin-top: 1rem;">
+                        <h3 style="font-size: 0.9rem; color: var(--text-primary); margin-bottom: 0.5rem;">🎯 Objectives:</h3>
+                        <ul class="objective-list" style="list-style: none; display: flex; flex-direction: column; gap: 0.4rem;">
+                            <li id="obj-1" class="obj-item" style="font-size: 0.85rem; display: flex; align-items: center; gap: 0.4rem;"><span class="obj-bullet" style="font-size: 0.65rem;">🔴</span> Objective 1</li>
+                            <li id="obj-2" class="obj-item" style="font-size: 0.85rem; display: flex; align-items: center; gap: 0.4rem;"><span class="obj-bullet" style="font-size: 0.65rem;">🔴</span> Objective 2</li>
+                            <li id="obj-3" class="obj-item" style="font-size: 0.85rem; display: flex; align-items: center; gap: 0.4rem;"><span class="obj-bullet" style="font-size: 0.65rem;">🔴</span> Objective 3</li>
+                        </ul>
                     </div>
-                    <div class="stat-row">
-                        <span>Bitter Yield (Undesired):</span>
-                        <span id="stat-yield2" class="mono text-bitter">0.0 %</span>
-                    </div>
-                    <div class="stat-row">
-                        <span>Taste Profile:</span>
-                        <span id="stat-taste" class="taste-badge taste-sour">Dry</span>
-                    </div>
-                </div>
-            </section>
+                </section>
+            </div>
 
             <!-- Center Column Container -->
             <div class="center-column">
@@ -256,6 +287,19 @@
         <button class="mobile-nav-btn" data-tab="theory"><span class="nav-icon">📐</span><span class="nav-text">Theory</span></button>
         <button class="mobile-nav-btn" data-tab="charts"><span class="nav-icon">📈</span><span class="nav-text">Charts</span></button>
     </nav>
+
+    <!-- Victory Modal Overlay -->
+    <div id="victory-modal" class="victory-modal" style="display: none;">
+        <div class="victory-card glass-card">
+            <span class="victory-icon" style="font-size: 3.5rem; display: block; text-align: center; margin-bottom: 0.5rem; animation: bounce 1s infinite;">🏆</span>
+            <h2 style="font-size: 1.6rem; font-weight: 800; text-align: center; color: var(--accent-blue); margin-bottom: 0.75rem;">Challenge Completed!</h2>
+            <p id="victory-message" style="font-size: 0.95rem; text-align: center; color: var(--text-primary); margin-bottom: 1rem; line-height: 1.4;">You solved it!</p>
+            <div class="victory-physics-lesson" id="victory-lesson" style="font-size: 0.85rem; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 0.75rem; border-radius: 8px; color: var(--text-secondary); line-height: 1.4; margin-bottom: 1.25rem;">
+                Here is the physical explanation...
+            </div>
+            <button id="btn-close-victory" class="btn btn-primary" style="width: 100%;">Proceed</button>
+        </div>
+    </div>
 
     <script src="script.js"></script>
 </body>
