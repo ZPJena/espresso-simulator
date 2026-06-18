@@ -203,6 +203,9 @@ document.addEventListener("DOMContentLoaded", () => {
         Ea2 = parseFloat(sliderEa2.value) * 1000.0;
         maxTime = parseFloat(sliderMaxTime.value);
 
+        // Size canvases dynamically before drawing
+        resizeCanvases();
+
         // Reset fields
         for (let i = 0; i < Nx; i++) {
             T[i] = 20.0; // dry puck starts at 20C
@@ -817,4 +820,65 @@ document.addEventListener("DOMContentLoaded", () => {
         ctx.arc(x_cur, y_cur, 5, 0, 2 * Math.PI);
         ctx.fill();
     }
+
+    // Mobile Navigation tab switcher
+    const mobileNavButtons = document.querySelectorAll(".mobile-nav-btn");
+    mobileNavButtons.forEach(btn => {
+        btn.addEventListener("click", (e) => {
+            const button = e.target.closest(".mobile-nav-btn");
+            if (!button) return;
+            
+            mobileNavButtons.forEach(b => b.classList.remove("active"));
+            button.classList.add("active");
+            
+            const targetTab = button.getAttribute("data-tab");
+            document.body.setAttribute("data-active-tab", targetTab);
+            logDebug(`Switched mobile view to: ${targetTab}`);
+            
+            // Recalculate canvas dimensions (needed because display status changed layout width)
+            resizeCanvases();
+            
+            // Redraw visible components
+            drawPuck();
+            drawPlot();
+            drawArrheniusCurve();
+            drawPermeabilityCurve();
+        });
+    });
+
+    // Dynamic Canvas Resizing for Responsive client layouts (Handy vs Laptop)
+    function resizeCanvases() {
+        // Size Puck Canvas (maintain aspect ratio based on parent width)
+        const puckContainer = puckCanvas.parentElement;
+        const puckW = Math.min(300, puckContainer.clientWidth || 300);
+        puckCanvas.width = puckW;
+        puckCanvas.height = Math.round(puckW * 1.33);
+
+        // Size Yield Plot Canvas
+        const plotContainer = plotCanvas.parentElement;
+        const plotW = Math.min(380, (plotContainer.clientWidth - 32) || 350);
+        plotCanvas.width = plotW;
+        plotCanvas.height = Math.round(plotW * 0.65);
+
+        // Size Arrhenius Canvas
+        const arrhContainer = arrheniusCanvas.parentElement;
+        const arrhW = Math.min(300, (arrhContainer.clientWidth - 24) || 260);
+        arrheniusCanvas.width = arrhW;
+        arrheniusCanvas.height = Math.round(arrhW * 0.5);
+
+        // Size Permeability Canvas
+        const permContainer = permeabilityCanvas.parentElement;
+        const permW = Math.min(300, (permContainer.clientWidth - 24) || 260);
+        permeabilityCanvas.width = permW;
+        permeabilityCanvas.height = Math.round(permW * 0.5);
+    }
+
+    // Window resize handler
+    window.addEventListener("resize", () => {
+        resizeCanvases();
+        drawPuck();
+        drawPlot();
+        drawArrheniusCurve();
+        drawPermeabilityCurve();
+    });
 });

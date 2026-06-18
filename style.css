@@ -554,3 +554,146 @@ select {
     margin-top: 0.25rem;
     width: 100%;
 }
+
+/* Mobile Navigation Bar (Desktop Hidden) */
+.mobile-nav {
+    display: none;
+}
+
+/* --- Responsive mobile-specific styles --- */
+@media (max-width: 768px) {
+    body {
+        padding: 1rem;
+        padding-bottom: 85px; /* space for the fixed nav bar */
+    }
+
+    .app-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+
+    .logo-area h1 {
+        font-size: 1.8rem;
+    }
+
+    .framing-quote {
+        text-align: left;
+        border-right: none;
+        border-left: 3px solid var(--accent-blue);
+        padding-right: 0;
+        padding-left: 1rem;
+        max-width: 100%;
+    }
+
+    /* Stack elements inside panels on mobile */
+    .app-workspace {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+    }
+
+    .center-column {
+        gap: 1.25rem;
+    }
+
+    /* Hide sections by default on mobile */
+    .control-panel,
+    .visualizer-panel,
+    .theory-panel,
+    .cup-card,
+    .plots-card {
+        display: none !important;
+    }
+
+    /* Show sections based on active tab attribute in body */
+    body[data-active-tab="brew"] .control-panel,
+    body[data-active-tab="brew"] .cup-card {
+        display: block !important;
+    }
+
+    body[data-active-tab="fields"] .visualizer-panel {
+        display: block !important;
+    }
+
+    body[data-active-tab="theory"] .theory-panel {
+        display: block !important;
+    }
+
+    body[data-active-tab="charts"] .plots-card {
+        display: block !important;
+    }
+
+    /* Canvas scale container alignment */
+    .canvas-wrapper {
+        justify-content: center;
+        width: 100%;
+    }
+
+    .plots-card canvas, 
+    .theory-subcard canvas {
+        width: 100% !important;
+        height: auto !important;
+    }
+
+    /* Theory subcard grid collapse */
+    .theory-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* Bottom mobile nav bar */
+    .mobile-nav {
+        display: flex;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 65px;
+        background: rgba(11, 13, 16, 0.92);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4);
+        justify-content: space-around;
+        align-items: center;
+        z-index: 1000;
+        padding: 5px 0;
+    }
+
+    .mobile-nav-btn {
+        background: none;
+        border: none;
+        color: var(--text-secondary);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-family: var(--font-sans);
+        transition: color 0.2s, transform 0.1s;
+        flex: 1;
+        height: 100%;
+    }
+
+    .nav-icon {
+        font-size: 1.35rem;
+        margin-bottom: 2px;
+    }
+
+    .nav-text {
+        font-size: 0.65rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .mobile-nav-btn.active {
+        color: var(--accent-blue);
+        text-shadow: 0 0 10px rgba(0, 210, 255, 0.3);
+    }
+    
+    .mobile-nav-btn.active .nav-icon {
+        transform: scale(1.1);
+    }
+}
+

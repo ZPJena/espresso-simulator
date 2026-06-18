@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 </head>
-<body>
+<body data-active-tab="brew">
     <div class="app-container">
         <!-- Header -->
         <header class="app-header">
@@ -247,8 +247,15 @@
             <div id="debug-console" class="debug-console">
                 [SYSTEM] Ready to simulate. Adjust parameters and click 'Start Brew'.
             </div>
-        </footer>
     </div>
+
+    <!-- Mobile Navigation Bar -->
+    <nav class="mobile-nav">
+        <button class="mobile-nav-btn active" data-tab="brew"><span class="nav-icon">⚙️</span><span class="nav-text">Brew</span></button>
+        <button class="mobile-nav-btn" data-tab="fields"><span class="nav-icon">👁️</span><span class="nav-text">Fields</span></button>
+        <button class="mobile-nav-btn" data-tab="theory"><span class="nav-icon">📐</span><span class="nav-text">Theory</span></button>
+        <button class="mobile-nav-btn" data-tab="charts"><span class="nav-icon">📈</span><span class="nav-text">Charts</span></button>
+    </nav>
 
     <script src="script.js"></script>
 </body>
