@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Espresso Extraction Simulator - TC I Lecture 1</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="logo-area">
+                <span class="badge">TC I Lecture 1</span>
+                <h1>Espresso Extraction Simulator</h1>
+                <p class="subtitle">FEM & Transport Phenomena Bridge: Experiment ⇄ Theory ⇄ Simulation</p>
+            </div>
+            <div class="framing-quote">
+                "Experiment gives us numbers. Theory gives us laws. Simulation reveals the hidden fields."
+            </div>
+        </header>
+
+        <!-- Main Workspace -->
+        <main class="app-workspace">
+            <!-- Left Column: Controls -->
+            <section class="control-panel glass-card">
+                <h2><span class="icon">⚙️</span> Process Parameters</h2>
+                <div class="control-group">
+                    <div class="slider-header">
+                        <label for="param-pressure">Pump Pressure (Observable)</label>
+                        <span class="slider-value" id="val-pressure">9.0 bar</span>
+                    </div>
+                    <input type="range" id="param-pressure" min="1.0" max="15.0" step="0.5" value="9.0">
+                    <div class="slider-labels">
+                        <span>1 bar (Gravity)</span>
+                        <span>9 bar (Espresso)</span>
+                        <span>15 bar</span>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <div class="slider-header">
+                        <label for="param-temp">Inlet Water Temp (Observable)</label>
+                        <span class="slider-value" id="val-temp">93 °C</span>
+                    </div>
+                    <input type="range" id="param-temp" min="70" max="100" step="1" value="93">
+                    <div class="slider-labels">
+                        <span>70°C (Cold/Sour)</span>
+                        <span>93°C (Optimal)</span>
+                        <span>100°C (Overheated)</span>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <div class="slider-header">
+                        <label for="param-grind">Grind Size (Permeability & Surface Area)</label>
+                        <span class="slider-value" id="val-grind">Medium</span>
+                    </div>
+                    <select id="param-grind">
+                        <option value="coarse">Coarse (French Press style) - Fast Flow</option>
+                        <option value="medium" selected>Medium (Standard Espresso) - Balanced Flow</option>
+                        <option value="fine">Fine (Turkish style) - Slow/Choked Flow</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <div class="slider-header">
+                        <label for="param-tamping">Tamping Force (Puck Porosity)</label>
+                        <span class="slider-value" id="val-tamping">15 kg</span>
+                    </div>
+                    <input type="range" id="param-tamping" min="5" max="30" step="1" value="15">
+                    <div class="slider-labels">
+                        <span>5 kg (Loose)</span>
+                        <span>15 kg (Standard)</span>
+                        <span>30 kg (Compacted)</span>
+                    </div>
+                <div class="control-group">
+                    <div class="slider-header">
+                        <label for="param-maxtime">Max Brew Time (Observable Limit)</label>
+                        <span class="slider-value" id="val-maxtime">30 s</span>
+                    </div>
+                    <input type="range" id="param-maxtime" min="10" max="120" step="5" value="30">
+                    <div class="slider-labels">
+                        <span>10 s (Short)</span>
+                        <span>30 s (Standard)</span>
+                        <span>120 s (Long/Turkish)</span>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button id="btn-start" class="btn btn-primary">▶ Start Brew</button>
+                    <button id="btn-reset" class="btn btn-secondary">🔄 Reset</button>
+                </div>
+
+                <!-- Simulation Info / Stats -->
+                <div class="stats-panel">
+                    <h3>📊 Real-time Outputs</h3>
+                    <div class="stat-row">
+                        <span>Brew Time:</span>
+                        <span id="stat-time" class="mono">0.0 s</span>
+                    </div>
+                    <div class="stat-row">
+                        <span>Flow Rate:</span>
+                        <span id="stat-flow" class="mono">0.00 mL/s</span>
+                    </div>
+                    <div class="stat-row">
+                        <span>Total Volume:</span>
+                        <span id="stat-volume" class="mono">0.0 mL</span>
+                    </div>
+                    <div class="stat-row">
+                        <span>Caffeine Yield (Desired):</span>
+                        <span id="stat-yield1" class="mono text-caffeine">0.0 %</span>
+                    </div>
+                    <div class="stat-row">
+                        <span>Bitter Yield (Undesired):</span>
+                        <span id="stat-yield2" class="mono text-bitter">0.0 %</span>
+                    </div>
+                    <div class="stat-row">
+                        <span>Taste Profile:</span>
+                        <span id="stat-taste" class="taste-badge taste-sour">Dry</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Center Column Container -->
+            <div class="center-column">
+                <!-- Center Column: Field Visualizer -->
+                <section class="visualizer-panel glass-card">
+                    <h2><span class="icon">👁️</span> Hidden Fields (Inside the Coffee Puck)</h2>
+                    
+                    <div class="view-selector">
+                        <button class="view-btn active" data-field="temp">🌡️ Temperature</button>
+                        <button class="view-btn" data-field="caffeine">☕ Caffeine Conc.</button>
+                        <button class="view-btn" data-field="bitter">🪵 Bitter Conc.</button>
+                        <button class="view-btn" data-field="depletion">📉 Solid Depletion</button>
+                    </div>
+
+                    <div class="puck-display-container">
+                        <div class="flow-arrow">⬇ WATER FLOW INLET ⬇</div>
+                        <div class="canvas-wrapper">
+                            <canvas id="puck-canvas" width="300" height="400"></canvas>
+                            <!-- Scale bar -->
+                            <div class="scale-bar">
+                                <span id="scale-max">93°C</span>
+                                <div class="scale-gradient"></div>
+                                <span id="scale-min">20°C</span>
+                            </div>
+                        </div>
+                        <div class="flow-arrow">⬇ ESPRESSO OUTLET ⬇</div>
+                    </div>
+                </section>
+
+                <!-- Bottom-Center: Theory & Governing Equations -->
+                <section class="theory-panel glass-card" style="margin-top: 1.5rem;">
+                    <h2><span class="icon">📐</span> Theory & Governing Equations (The Laws)</h2>
+                    <div class="theory-grid">
+                        <!-- Arrhenius Law Card -->
+                        <div class="theory-subcard">
+                            <div class="eq-display">
+                                <span class="eq-label">Arrhenius Kinetics</span>
+                                <span class="eq-formula">k(T) = k<sub>0</sub> &middot; e<sup>-E<sub>a</sub> / RT</sup></span>
+                            </div>
+                            <div class="theory-sliders">
+                                <div class="slider-header">
+                                    <label for="param-ea1">Caffeine E<sub>a</sub></label>
+                                    <span class="slider-value" id="val-ea1">30.0 kJ/mol</span>
+                                </div>
+                                <input type="range" id="param-ea1" min="10.0" max="60.0" step="1.0" value="30.0">
+                                
+                                <div class="slider-header" style="margin-top: 0.5rem;">
+                                    <label for="param-ea2">Bitterness E<sub>a</sub></label>
+                                    <span class="slider-value" id="val-ea2">55.0 kJ/mol</span>
+                                </div>
+                                <input type="range" id="param-ea2" min="30.0" max="90.0" step="1.0" value="55.0">
+                            </div>
+                            <canvas id="arrhenius-canvas" width="260" height="130"></canvas>
+                        </div>
+
+                        <!-- Kozeny-Carman & Darcy Card -->
+                        <div class="theory-subcard">
+                            <div class="eq-display">
+                                <span class="eq-label">Kozeny-Carman Permeability</span>
+                                <span class="eq-formula">&kappa; = &kappa;<sub>0</sub> &middot; &epsilon;<sup>3</sup> / (1-&epsilon;)<sup>2</sup></span>
+                            </div>
+                            <div class="theory-sliders">
+                                <div class="slider-header">
+                                    <label for="param-k0">Ref. Permeability (&kappa;<sub>0</sub>)</label>
+                                    <span class="slider-value" id="val-k0">6.0 &times; 10<sup>-15</sup> m<sup>2</sup></span>
+                                </div>
+                                <input type="range" id="param-k0" min="1.0" max="15.0" step="0.5" value="6.0">
+                                
+                                <div class="slider-header" style="margin-top: 0.5rem; opacity: 0.7;">
+                                    <label>Darcy Velocity</label>
+                                    <span class="slider-value" style="background: none; color: var(--text-secondary);" id="val-darcy-eq">u = &kappa;/&mu; &middot; &Delta;P/L</span>
+                                </div>
+                            </div>
+                            <canvas id="permeability-canvas" width="260" height="130"></canvas>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Right Column: Cup Animation & Plots -->
+            <section class="cup-plot-panel">
+                <!-- Cup animation card -->
+                <div class="cup-card glass-card">
+                    <h2><span class="icon">☕</span> Experimental Observable (The Cup)</h2>
+                    <div class="espresso-cup-container">
+                        <div class="steam-container">
+                            <div class="steam-line"></div>
+                            <div class="steam-line"></div>
+                            <div class="steam-line"></div>
+                        </div>
+                        <div class="cup">
+                            <div class="cup-handle"></div>
+                            <div class="liquid-fill" id="cup-liquid">
+                                <div class="crema-layer" id="cup-crema"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="cup-stats">
+                        <div class="cup-stat">
+                            <label>TDS (Strength)</label>
+                            <span id="stat-tds" class="mono">0.00%</span>
+                        </div>
+                        <div class="cup-stat">
+                            <label>Caffeine/Bitter Ratio</label>
+                            <span id="stat-ratio" class="mono">0.00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Plots card -->
+                <div class="plots-card glass-card">
+                    <h2><span class="icon">📈</span> Live Yield Curves</h2>
+                    <canvas id="plot-canvas" width="350" height="230"></canvas>
+                </div>
+            </section>
+        </main>
+
+        <!-- Debug / Console Console -->
+        <footer class="app-footer glass-card">
+            <div class="debug-title">⚙️ Simulator Internal Debug Log</div>
+            <div id="debug-console" class="debug-console">
+                [SYSTEM] Ready to simulate. Adjust parameters and click 'Start Brew'.
+            </div>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
