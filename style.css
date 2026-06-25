@@ -85,6 +85,42 @@ body {
     font-size: 0.95rem;
 }
 
+.app-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+}
+
+.nav-item {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 0.4rem 0.8rem;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-card);
+    border-radius: 20px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.nav-item:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
+}
+
+.nav-item.active {
+    color: var(--accent-blue);
+    background: rgba(0, 210, 255, 0.12);
+    border-color: var(--accent-blue);
+    box-shadow: 0 4px 12px rgba(0, 210, 255, 0.15);
+}
+
 .framing-quote {
     font-style: italic;
     color: var(--accent-blue);

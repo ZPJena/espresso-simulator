@@ -16,7 +16,14 @@
             <div class="logo-area">
                 <span class="badge">TC I Lecture 1</span>
                 <h1>Espresso Extraction Simulator</h1>
-                <p class="subtitle">FEM & Transport Phenomena Bridge: Experiment ⇄ Theory ⇄ Simulation</p>
+                <nav class="app-nav">
+                    <a href="index.html" class="nav-item active">☕ Espresso (Class 1 & 2)</a>
+                    <a href="pizza.html" class="nav-item">🍕 Pizza (Class 4)</a>
+                    <a href="mixer.html" class="nav-item">🌀 Coffee Stirring (Class 5)</a>
+                    <a href="reactor.html" class="nav-item">📱 Phone Heat (Class 6)</a>
+                    <a href="cooling.html" class="nav-item">❄️ Thermos Design (Class 7)</a>
+                    <a href="playground.html" class="nav-item">🔬 Equation Playground</a>
+                </nav>
             </div>
             <div class="framing-quote">
                 "Experiment gives us numbers. Theory gives us laws. Simulation reveals the hidden fields."
@@ -32,64 +39,91 @@
                     <h2><span class="icon">⚙️</span> Process Parameters</h2>
                     <div class="control-group">
                         <div class="slider-header">
-                            <label for="param-pressure">Pump Pressure (Observable)</label>
-                            <span class="slider-value" id="val-pressure">9.0 bar</span>
+                            <label for="param-pressure">Druck des Wassers (Water Pressure)</label>
+                            <span class="slider-value" id="val-pressure">0.95 MPa</span>
                         </div>
-                        <input type="range" id="param-pressure" min="1.0" max="15.0" step="0.5" value="9.0">
+                        <input type="range" id="param-pressure" min="0.10" max="1.50" step="0.05" value="0.95">
                         <div class="slider-labels">
-                            <span>1 bar (Gravity)</span>
-                            <span>9 bar (Espresso)</span>
-                            <span>15 bar</span>
+                            <span>0.10 MPa (1 bar)</span>
+                            <span>0.95 MPa (9.5 bar)</span>
+                            <span>1.50 MPa (15 bar)</span>
                         </div>
                     </div>
 
                     <div class="control-group">
                         <div class="slider-header">
-                            <label for="param-temp">Inlet Water Temp (Observable)</label>
+                            <label for="param-temp">Temperatur des Wassers (Water Temp)</label>
                             <span class="slider-value" id="val-temp">93 °C</span>
                         </div>
                         <input type="range" id="param-temp" min="70" max="100" step="1" value="93">
                         <div class="slider-labels">
                             <span>70°C (Cold/Sour)</span>
-                            <span>93°C (Optimal)</span>
-                            <span>100°C (Overheated)</span>
+                            <span>88-94°C (FSU Ideal)</span>
+                            <span>100°C (Boiling)</span>
                         </div>
                     </div>
 
                     <div class="control-group">
                         <div class="slider-header">
-                            <label for="param-grind">Grind Size (Permeability & Surface Area)</label>
-                            <span class="slider-value" id="val-grind">Medium</span>
+                            <label for="param-grind">Mahlgrad des Kaffeepulvers (Grind Size)</label>
+                            <span class="slider-value" id="val-grind">Mittel</span>
                         </div>
                         <select id="param-grind">
-                            <option value="coarse">Coarse (French Press style) - Fast Flow</option>
-                            <option value="medium" selected>Medium (Standard Espresso) - Balanced Flow</option>
-                            <option value="fine">Fine (Turkish style) - Slow/Choked Flow</option>
+                            <option value="coarse">Grob (Coarse, French Press style)</option>
+                            <option value="medium" selected>Mittel (Medium, Standard Espresso)</option>
+                            <option value="fine">Fein (Fine, Turkish style)</option>
                         </select>
                     </div>
 
                     <div class="control-group">
                         <div class="slider-header">
-                            <label for="param-tamping">Tamping Force (Puck Porosity)</label>
-                            <span class="slider-value" id="val-tamping">15 kg</span>
+                            <label for="param-thickness">Dicke der Kaffeeschicht (Layer Thickness)</label>
+                            <span class="slider-value" id="val-thickness">2.0 cm</span>
                         </div>
-                        <input type="range" id="param-tamping" min="5" max="30" step="1" value="15">
+                        <input type="range" id="param-thickness" min="1.0" max="3.0" step="0.1" value="2.0">
                         <div class="slider-labels">
-                            <span>5 kg (Loose)</span>
-                            <span>15 kg (Standard)</span>
-                            <span>30 kg (Compacted)</span>
+                            <span>1.0 cm (Thin)</span>
+                            <span>2.0 cm (Default)</span>
+                            <span>3.0 cm (Thick)</span>
                         </div>
                     </div>
+
                     <div class="control-group">
                         <div class="slider-header">
-                            <label for="param-maxtime">Max Brew Time (Observable Limit)</label>
-                            <span class="slider-value" id="val-maxtime">30 s</span>
+                            <label for="param-compression">Volumenkompression (Volume Compression)</label>
+                            <span class="slider-value" id="val-compression">36 %</span>
                         </div>
-                        <input type="range" id="param-maxtime" min="10" max="120" step="5" value="30">
+                        <input type="range" id="param-compression" min="10" max="50" step="1" value="36">
                         <div class="slider-labels">
-                            <span>10 s (Short)</span>
-                            <span>30 s (Standard)</span>
-                            <span>120 s (Long/Turkish)</span>
+                            <span>10% (Loose)</span>
+                            <span>36% (FSU Ideal)</span>
+                            <span>50% (Highly Compacted)</span>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <div class="slider-header">
+                            <label for="param-mass">Menge des Kaffeepulvers (Powder Mass)</label>
+                            <span class="slider-value" id="val-mass">6.5 g</span>
+                        </div>
+                        <input type="range" id="param-mass" min="5.0" max="10.0" step="0.1" value="6.5">
+                        <div class="slider-labels">
+                            <span>5.0 g</span>
+                            <span>6.5 g (FSU Ideal)</span>
+                            <span>10.0 g</span>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <div class="slider-header">
+                            <label for="param-maxtime">Extraktionszeit (Max Brew Time)</label>
+                            <span class="slider-value" id="val-maxtime">25 s</span>
+                        </div>
+                        <input type="range" id="param-maxtime" min="10" max="120" step="5" value="25">
+                        <div class="slider-labels">
+                            <span>10 s</span>
+                            <span>25 s (FSU Ideal)</span>
+                            <span>120 s</span>
                         </div>
                     </div>
 
@@ -278,6 +312,7 @@
             <div id="debug-console" class="debug-console">
                 [SYSTEM] Ready to simulate. Adjust parameters and click 'Start Brew'.
             </div>
+        </footer>
     </div>
 
     <!-- Mobile Navigation Bar -->
@@ -301,6 +336,6 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script src="script.js?v=1.0.1"></script>
 </body>
 </html>

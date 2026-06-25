@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coffee Stirring Simulator - TC I Lecture 5</title>
+    <link rel="stylesheet" href="mixer_style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="logo-area">
+                <span class="badge">TC I Lecture 5</span>
+                <h1>Coffee Stirring Simulator</h1>
+                <p class="subtitle">FEM & Transport Phenomena Bridge: See the Invisible Flow</p>
+                <nav class="app-nav">
+                    <a href="index.html" class="nav-item">☕ Espresso (Class 1 & 2)</a>
+                    <a href="pizza.html" class="nav-item">🍕 Pizza (Class 4)</a>
+                    <a href="mixer.html" class="nav-item active">🌀 Coffee Stirring (Class 5)</a>
+                    <a href="reactor.html" class="nav-item">📱 Phone Heat (Class 6)</a>
+                    <a href="cooling.html" class="nav-item">❄️ Thermos Design (Class 7)</a>
+                    <a href="playground.html" class="nav-item">🔬 Equation Playground</a>
+                </nav>
+            </div>
+            <div class="framing-quote">
+                "Experiment tells us whether the fluid is mixed. Simulation shows the flow patterns, dead zones, and shear layers."
+            </div>
+        </header>
+
+        <!-- Main Workspace -->
+        <main class="app-workspace">
+            <!-- Left Column: Controls -->
+            <div class="left-column">
+                <section class="control-panel glass-card">
+                    <h2><span class="icon">⚙️</span> Control Panel</h2>
+                    
+                    <div class="control-group">
+                        <div class="slider-header">
+                            <label for="param-speed">Rührgeschwindigkeit (Stir Speed)</label>
+                            <span class="slider-value" id="val-speed">1.5 rad/s</span>
+                        </div>
+                        <input type="range" id="param-speed" min="0.0" max="5.0" step="0.2" value="1.5">
+                        <div class="slider-labels">
+                            <span>0.0 (Diffusion only)</span>
+                            <span>2.5 (Medium)</span>
+                            <span>5.0 (Fast)</span>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <div class="slider-header">
+                            <label for="param-diff">Diffusionskoeffizient (Diffusion Coeff)</label>
+                            <span class="slider-value" id="val-diff">0.15</span>
+                        </div>
+                        <input type="range" id="param-diff" min="0.01" max="1.00" step="0.01" value="0.15">
+                        <div class="slider-labels">
+                            <span>0.01 (Slow Swirls)</span>
+                            <span>0.50 (Medium)</span>
+                            <span>1.00 (Rapid Bleeding)</span>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label class="toggle-container">
+                            <input type="checkbox" id="param-baffle" checked>
+                            <span class="checkmark"></span>
+                            <span class="toggle-label">Ablenkblech / Löffel blockieren (Enable Baffle)</span>
+                        </label>
+                        <p class="control-help">Baffles break rotational symmetry, creating chaotic advection (stretching/folding).</p>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="param-pattern">Anfangsmuster (Initial Pattern)</label>
+                        <select id="param-pattern">
+                            <option value="blob" selected>Milchtropfen (Single Milk Drop)</option>
+                            <option value="half">Halb & Halb (Half and Half)</option>
+                            <option value="ring">Konzentrischer Ring (Coaxial Ring)</option>
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="param-stir-mode">Rührmodus (Stirring Protocol)</label>
+                        <select id="param-stir-mode">
+                            <option value="continuous" selected>Kontinuierlich (Continuous Rotation)</option>
+                            <option value="backforth">Hin und Her (Back-and-Forth)</option>
+                            <option value="manual">Manuell (Drag inside cup to stir)</option>
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <div class="slider-header">
+                            <label for="param-simspeed">Simulationsgeschwindigkeit (Sim Speed)</label>
+                            <span class="slider-value" id="val-simspeed">1.0x</span>
+                        </div>
+                        <input type="range" id="param-simspeed" min="0.5" max="3.0" step="0.5" value="1.0">
+                    </div>
+
+                    <div class="action-buttons">
+                        <button id="btn-reset" class="btn btn-secondary">Reset Sim</button>
+                        <button id="btn-pause" class="btn btn-primary">Start Sim</button>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Middle Column: Visualizer -->
+            <div class="middle-column">
+                <section class="visualizer glass-card">
+                    <h2><span class="icon">🌀</span> 2D Concentration Field (Advection-Diffusion)</h2>
+                    <div class="canvas-container">
+                        <canvas id="canvas-field" width="400" height="400"></canvas>
+                    </div>
+                    <div class="hud-readout">
+                        <div class="hud-item">
+                            <span class="hud-label">Time:</span>
+                            <span class="hud-value" id="hud-time">0.0 s</span>
+                        </div>
+                        <div class="hud-item">
+                            <span class="hud-label">Mixing Quality:</span>
+                            <span class="hud-value" id="hud-mixing">0.0%</span>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Right Column: Charts & Explanations -->
+            <div class="right-column">
+                <section class="analytics glass-card">
+                    <h2><span class="icon">📈</span> Mixing Performance</h2>
+                    <div class="chart-container">
+                        <canvas id="canvas-chart" width="360" height="200"></canvas>
+                    </div>
+                </section>
+
+                <section class="didactic-info glass-card">
+                    <h2><span class="icon">🎓</span> Lecture 5 Didactic Bridge</h2>
+                    <div class="didactic-content">
+                        <h3>Flow Pattern Explains Performance</h3>
+                        <p>In a symmetric rotational flow (no baffle), fluid elements follow closed circular trajectories. Mixing is limited by molecular diffusion across shear layers, which is extremely slow.</p>
+                        <p>Adding a <strong>baffle</strong> breaks the circular symmetry, deflecting the streamlines. The combination of rotation and deflection creates <strong>chaotic advection</strong>, stretching the milk droplets into thin sheets (striations) and folding them.</p>
+                        <p>Because the striation thickness decreases exponentially, the diffusion time drops quadratically:
+                        \[t_{\text{diff}} \approx \frac{s^2}{D}\]
+                        This explains why flow design determines the rate of thermal or chemical homogenization.</p>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Load MathJax for LaTeX rendering -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="mixer_script.js?v=1.0.1"></script>
+</body>
+</html>

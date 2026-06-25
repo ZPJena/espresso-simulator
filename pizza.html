@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pizza Cooking & Preheating Optimizer - TC I Lecture 4</title>
+    <link rel="stylesheet" href="pizza_style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="logo-area">
+                <span class="badge">TC I Lecture 4</span>
+                <h1>Pizza Cooking & Preheating Optimizer</h1>
+                <nav class="app-nav">
+                    <a href="index.html" class="nav-item">☕ Espresso (Class 1 & 2)</a>
+                    <a href="pizza.html" class="nav-item active">🍕 Pizza (Class 4)</a>
+                    <a href="mixer.html" class="nav-item">🌀 Coffee Stirring (Class 5)</a>
+                    <a href="reactor.html" class="nav-item">📱 Phone Heat (Class 6)</a>
+                    <a href="cooling.html" class="nav-item">❄️ Thermos Design (Class 7)</a>
+                    <a href="playground.html" class="nav-item">🔬 Equation Playground</a>
+                </nav>
+            </div>
+            <div class="framing-quote">
+                "Experiment tells us what happened. Theory tells us why it should happen. FEM shows where and when it happens."
+            </div>
+        </header>
+
+        <!-- Main Workspace -->
+        <main class="app-workspace">
+            <!-- Left Column: Parameters and Controls -->
+            <div class="left-column">
+                <section class="control-panel glass-card">
+                    <h2><span class="icon">⚙️</span> Process Parameters</h2>
+                    
+                    <div class="control-group">
+                        <div class="slider-header">
+                            <label for="param-t0">Anfangstemperatur (Frozen Temp)</label>
+                            <span class="slider-value" id="val-t0">-18 °C</span>
+                        </div>
+                        <input type="range" id="param-t0" min="-25" max="0" step="1" value="-18">
+                        <div class="slider-labels">
+                            <span>-25°C (Deep Freeze)</span>
+                            <span>-18°C (Standard)</span>
+                            <span>0°C (Thawed)</span>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <div class="slider-header">
+                            <label for="param-ttarget">Backofentemperatur (Oven Temp)</label>
+                            <span class="slider-value" id="val-ttarget">200 °C</span>
+                        </div>
+                        <input type="range" id="param-ttarget" min="150" max="250" step="5" value="200">
+                        <div class="slider-labels">
+                            <span>150°C (Gentle)</span>
+                            <span>200°C (Standard)</span>
+                            <span>250°C (High Heat)</span>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <div class="slider-header">
+                            <label for="param-recipetime">Backzeit lt. Anleitung (Recipe Time)</label>
+                            <span class="slider-value" id="val-recipetime">12 min</span>
+                        </div>
+                        <input type="range" id="param-recipetime" min="5" max="25" step="1" value="12">
+                        <div class="slider-labels">
+                            <span>5 min</span>
+                            <span>12 min (Default)</span>
+                            <span>25 min</span>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <div class="slider-header">
+                            <label for="param-tau">Aufheizzeitkonstante (Oven heating rate τ)</label>
+                            <span class="slider-value" id="val-tau">200 s</span>
+                        </div>
+                        <input type="range" id="param-tau" min="100" max="500" step="10" value="200">
+                        <div class="slider-labels">
+                            <span>100s (Fast Oven)</span>
+                            <span>200s (Typical)</span>
+                            <span>500s (Slow Oven)</span>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <div class="slider-header">
+                            <label for="param-thickness">Pizza-Dicke (Pizza Thickness)</label>
+                            <span class="slider-value" id="val-thickness">1.0 cm</span>
+                        </div>
+                        <input type="range" id="param-thickness" min="0.5" max="2.0" step="0.1" value="1.0">
+                        <div class="slider-labels">
+                            <span>0.5 cm (Thin)</span>
+                            <span>1.0 cm (Medium)</span>
+                            <span>2.0 cm (Deep Dish)</span>
+                        </div>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button id="btn-start" class="btn btn-primary">▶ Start Sim</button>
+                        <button id="btn-reset" class="btn btn-secondary">🔄 Reset</button>
+                    </div>
+
+                    <div class="control-group" style="margin-top: 1rem;">
+                        <div class="slider-header">
+                            <label for="param-speed">Simulationsgeschwindigkeit (Sim Speed)</label>
+                            <span class="slider-value" id="val-speed">2.0x</span>
+                        </div>
+                        <input type="range" id="param-speed" min="0.5" max="5.0" step="0.5" value="2.0">
+                        <div class="slider-labels">
+                            <span>0.5x (Slow)</span>
+                            <span>2.0x (Default)</span>
+                            <span>5.0x (Fast)</span>
+                        </div>
+                    </div>
+
+                    <!-- Live Stats Readout -->
+                    <div class="stats-panel">
+                        <h3>📊 Real-time State (Cold-Start B)</h3>
+                        <div class="stat-row">
+                            <span>Oven Timer:</span>
+                            <span id="stat-time" class="mono">0.0 min</span>
+                        </div>
+                        <div class="stat-row">
+                            <span>Oven Temp:</span>
+                            <span id="stat-oventemp" class="mono text-blue">20.0 °C</span>
+                        </div>
+                        <div class="stat-row">
+                            <span>Core Temp:</span>
+                            <span id="stat-centertemp" class="mono text-orange">-18.0 °C</span>
+                        </div>
+                        <div class="stat-row">
+                            <span>Core Doneness:</span>
+                            <span id="stat-centerdone" class="mono text-green">0.0 %</span>
+                        </div>
+                        <div class="stat-row">
+                            <span>State:</span>
+                            <span id="stat-mode" class="mono" style="font-weight: 600; color: var(--text-secondary);">Idle</span>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Center Column: Visualization & Governing Equations -->
+            <div class="center-column">
+                <section class="visualizer-panel glass-card">
+                    <h2><span class="icon">👁️</span> Pizza Cross-Section (FEM Heat & Doneness)</h2>
+                    
+                    <div class="view-selector">
+                        <button class="view-btn active" data-field="temp">🌡️ Temperature Profile</button>
+                        <button class="view-btn" data-field="done">🟢 Cooking Doneness</button>
+                        <button class="view-btn" data-field="burn">🔥 Crust Browning & Burn</button>
+                    </div>
+
+                    <div class="pizza-display-container">
+                        <div class="canvas-wrapper">
+                            <canvas id="pizza-canvas" width="300" height="300"></canvas>
+                            <!-- Scale bar -->
+                            <div class="scale-bar scale-temp">
+                                <span id="scale-max">200°C</span>
+                                <div class="scale-gradient"></div>
+                                <span id="scale-min">-18°C</span>
+                            </div>
+                        </div>
+                        <div class="canvas-label">
+                            ← Top Convective Surface &nbsp;|&nbsp; Center Core (Symmetry Line) &nbsp;|&nbsp; Bottom Convective Surface →
+                        </div>
+                    </div>
+                </section>
+
+                <section class="theory-panel glass-card">
+                    <h2><span class="icon">📐</span> Governing Physics & Kinetics</h2>
+                    <div class="theory-grid">
+                        <div class="theory-subcard">
+                            <div class="eq-display">
+                                <span class="eq-label">Arrhenius Cooking Rate</span>
+                                <span class="eq-formula">R<sub>c</sub> = A<sub>0</sub>·e<sup>-E<sub>a</sub> / RT</sup>·(1 - c)</span>
+                            </div>
+                            <p class="theory-desc">
+                                Pizza cooking is modeled as a chemical reaction with activation energy $E_a$. The pre-exponential factor $A_0$ is dynamically calibrated using the supermarket recipe (A center doneness of 99% is reached after 12 minutes in a preheated oven at 200°C).
+                            </p>
+                        </div>
+                        <div class="theory-subcard">
+                            <div class="eq-display">
+                                <span class="eq-label">Fourier Conduction with Phase Change</span>
+                                <span class="eq-formula">ρ·C<sub>p</sub>(T)·∂T/∂t = k·∂²T/∂x²</span>
+                            </div>
+                            <p class="theory-desc">
+                                Transient heat conduction from the oven boundary. To represent the frozen state, the specific heat capacity $C_p(T)$ peaks sharply at $0^\circ\text{C}$ to account for the latent heat of ice melting ($133.6\text{ kJ/kg}$), creating the temperature plateau.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Right Column: Results comparison & charts -->
+            <div class="cup-plot-panel">
+                <!-- Comparison Results Card -->
+                <section class="comparison-card glass-card">
+                    <h2><span class="icon">📊</span> Preheating Efficiency Analysis</h2>
+                    
+                    <div class="results-dashboard">
+                        <div class="result-metric savings-hero">
+                            <div class="metric-title">⏱️ Total Oven Runtime Saved</div>
+                            <div id="metric-saved" class="metric-value">4.5 min</div>
+                            <div id="metric-percent" class="metric-value" style="font-size: 1.1rem; font-weight: 600; margin-top: 0.2rem;">34.1% Savings</div>
+                            <div class="metric-comparison">Putting pizza in cold oven is highly efficient</div>
+                        </div>
+
+                        <div class="result-metric">
+                            <div class="metric-title">Scenario A (Preheated)</div>
+                            <div class="metric-comparison" style="margin-bottom: 0.4rem;">
+                                Preheat: <span id="metric-a-preheat" class="mono font-weight-bold">10.0 min</span><br>
+                                Bake: <span id="metric-a-cook" class="mono font-weight-bold">12.0 min</span>
+                            </div>
+                            <div id="metric-a-total" class="metric-value text-orange">22.0 min</div>
+                            <div class="metric-comparison">Total Oven Runtime</div>
+                        </div>
+
+                        <div class="result-metric">
+                            <div class="metric-title">Scenario B (Cold-Start)</div>
+                            <div class="metric-comparison" style="margin-bottom: 0.4rem;">
+                                Preheat: <span class="mono">0.0 min (Simultaneous)</span><br>
+                                Bake: <span id="metric-b-cook" class="mono font-weight-bold">14.5 min</span>
+                            </div>
+                            <div id="metric-b-total" class="metric-value text-green">14.5 min</div>
+                            <div class="metric-comparison">Total Oven Runtime</div>
+                        </div>
+
+                        <div class="result-metric" style="grid-column: 1 / span 2; display: flex; justify-content: space-around; align-items: center; padding: 0.5rem 1rem;">
+                            <div style="text-align: left;">
+                                <div class="metric-title" style="margin: 0;">🔥 Crust Browning / Burn State</div>
+                                <div class="metric-comparison" style="margin: 0; font-size: 0.65rem;">Final surface browning (15% is perfect)</div>
+                            </div>
+                            <div style="display: flex; gap: 1.5rem;">
+                                <div style="text-align: center;">
+                                    <div style="font-size: 0.7rem; color: var(--text-secondary);">A (Preheated)</div>
+                                    <div id="metric-a-stress" class="mono font-weight-bold text-orange" style="font-size: 0.9rem;">15.0%</div>
+                                </div>
+                                <div style="text-align: center;">
+                                    <div style="font-size: 0.7rem; color: var(--text-secondary);">B (Cold-Start)</div>
+                                    <div id="metric-b-stress" class="mono font-weight-bold text-green" style="font-size: 0.9rem;">7.5%</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Plots Card -->
+                <section class="plots-card glass-card">
+                    <h2><span class="icon">📈</span> Simulation Curve Graphs</h2>
+                    
+                    <div class="chart-wrapper">
+                        <canvas id="temp-canvas" width="340" height="150"></canvas>
+                    </div>
+                    <div class="chart-wrapper" style="margin-top: 0.75rem;">
+                        <canvas id="done-canvas" width="340" height="150"></canvas>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <!-- Hidden sliders for physical tuning -->
+        <section class="tuning-panel glass-card" style="display: none;">
+            <span id="val-k">0.20</span>
+            <span id="val-ea">60</span>
+            <span id="val-hconv">15</span>
+            <input type="range" id="param-k" min="0.10" max="0.50" step="0.01" value="0.20">
+            <input type="range" id="param-ea" min="40" max="80" step="1" value="60">
+            <input type="range" id="param-hconv" min="5" max="40" step="1" value="15">
+        </section>
+
+        <!-- Debug / Logger Console -->
+        <footer class="app-footer glass-card">
+            <div class="debug-title">⚙️ Simulator Internal Debug Log</div>
+            <pre id="debug-console" class="debug-console">[SYSTEM] Ready to simulate. Calibrating doneness reaction model...</pre>
+        </footer>
+    </div>
+
+    <!-- Mobile Navigation Bar (Fallback) -->
+    <nav class="mobile-nav">
+        <button class="mobile-nav-btn active" data-tab="brew"><span class="nav-icon">⚙️</span><span class="nav-text">Settings</span></button>
+        <button class="mobile-nav-btn" data-tab="fields"><span class="nav-icon">👁️</span><span class="nav-text">Visualizer</span></button>
+        <button class="mobile-nav-btn" data-tab="charts"><span class="nav-icon">📈</span><span class="nav-text">Results</span></button>
+    </nav>
+
+    <script src="pizza_script.js?v=1.0.1"></script>
+    
+    <!-- Render inline LaTeX for theory rendering if needed -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</body>
+</html>

@@ -6,8 +6,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const sliderTemp = document.getElementById("param-temp");
     const valTemp = document.getElementById("val-temp");
     const selectGrind = document.getElementById("param-grind");
-    const sliderTamping = document.getElementById("param-tamping");
-    const valTamping = document.getElementById("val-tamping");
+    const valGrind = document.getElementById("val-grind");
+    const sliderCompression = document.getElementById("param-compression");
+    const valCompression = document.getElementById("val-compression");
+    const sliderThickness = document.getElementById("param-thickness");
+    const valThickness = document.getElementById("val-thickness");
+    const sliderMass = document.getElementById("param-mass");
+    const valMass = document.getElementById("val-mass");
 
     const btnStart = document.getElementById("btn-start");
     const btnReset = document.getElementById("btn-reset");
@@ -55,9 +60,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const btnCloseVictory = document.getElementById("btn-close-victory");
 
     // Grid and constants
-    const L = 0.02; // puck length (m)
+    let L = 0.02; // puck length (m)
     const Nx = 40;  // grid points
-    const dx = L / (Nx - 1);
+    let dx = L / (Nx - 1);
     const dt = 0.004; // time step for stability (CFL condition)
     const R = 8.314;  // gas constant
 
@@ -101,20 +106,29 @@ document.addEventListener("DOMContentLoaded", () => {
     let totalWaterVolume = 0.0; // mL
     let yieldHistory = []; // {t, y1, y2}
 
-    // Initialize values
-    resetSimulation();
-
     // Event Listeners
     sliderPressure.addEventListener("input", (e) => {
-        valPressure.textContent = parseFloat(e.target.value).toFixed(1) + " bar";
+        const mpa = parseFloat(e.target.value);
+        const bar = mpa * 10.0;
+        valPressure.textContent = mpa.toFixed(2) + " MPa (" + bar.toFixed(1) + " bar)";
     });
     sliderTemp.addEventListener("input", (e) => {
         valTemp.textContent = e.target.value + " °C";
         drawArrheniusCurve();
     });
-    sliderTamping.addEventListener("input", (e) => {
-        valTamping.textContent = e.target.value + " kg";
+    sliderCompression.addEventListener("input", (e) => {
+        valCompression.textContent = e.target.value + " %";
         drawPermeabilityCurve();
+    });
+    sliderThickness.addEventListener("input", (e) => {
+        valThickness.textContent = parseFloat(e.target.value).toFixed(1) + " cm";
+    });
+    sliderMass.addEventListener("input", (e) => {
+        valMass.textContent = parseFloat(e.target.value).toFixed(1) + " g";
+        drawPermeabilityCurve();
+    });
+    selectGrind.addEventListener("change", (e) => {
+        valGrind.textContent = selectGrind.options[selectGrind.selectedIndex].text.split(" (")[0];
     });
 
     // Theory Sliders Listeners
@@ -159,13 +173,9 @@ document.addEventListener("DOMContentLoaded", () => {
             challengeObjectives.style.display = "none";
         } else {
             challengeObjectives.style.display = "block";
-            // Populate objective names
-            document.getElementById("obj-1").innerHTML = `<span class="obj-bullet" style="color: var(--accent-red)">🔴</span> ${challenge.objectives[0]}`;
-            document.getElementById("obj-2").innerHTML = `<span class="obj-bullet" style="color: var(--accent-red)">🔴</span> ${challenge.objectives[1]}`;
-            document.getElementById("obj-3").innerHTML = `<span class="obj-bullet" style="color: var(--accent-red)">🔴</span> ${challenge.objectives[2]}`;
         }
         
-        // Reset the simulation to apply locks
+        // Reset the simulation to apply locks and initialize objectives
         resetSimulation();
     });
 
@@ -224,6 +234,42 @@ document.addEventListener("DOMContentLoaded", () => {
         return 50.0 * Math.exp(-3000.0 / T_k) / Math.exp(-3000.0 / 363.15);
     }
 
+    function checkObjectives() {
+        if (activeChallenge === "none") return;
+        
+        const challenge = challengeData[activeChallenge];
+        const mass = parseFloat(sliderMass.value);
+        const comp = parseFloat(sliderCompression.value);
+        const epsilon = 0.70 - 0.03 * mass - 0.3 * (comp / 100.0);
+        const rho_b = (1.0 - epsilon) * rho_s;
+        const total_dry_coffee_mass = rho_b * (L * 2e-3);
+        const initial_caffeine = S1_0 * total_dry_coffee_mass;
+        const initial_bitter = S2_0 * total_dry_coffee_mass;
+
+        const yieldCaff = (massCaffeineExtracted / initial_caffeine) * 100.0;
+        const yieldBit = (massBitterExtracted / initial_bitter) * 100.0;
+        
+        const validation = challenge.validate(t, totalWaterVolume, yieldCaff, yieldBit);
+        
+        const bullets = [
+            document.getElementById("obj-1"),
+            document.getElementById("obj-2"),
+            document.getElementById("obj-3")
+        ];
+        
+        for (let bIdx = 0; bIdx < 3; bIdx++) {
+            if (validation.status[bIdx]) {
+                bullets[bIdx].innerHTML = `<span class="obj-bullet" style="color: var(--accent-green); font-weight: bold;">[Met] 🟢</span> ${challenge.objectives[bIdx]}`;
+            } else {
+                bullets[bIdx].innerHTML = `<span class="obj-bullet" style="color: var(--accent-red); font-weight: bold;">[Pending] 🔴</span> ${challenge.objectives[bIdx]}`;
+            }
+        }
+        
+        if (validation.success) {
+            triggerVictory(challenge.lesson);
+        }
+    }
+
     function resetSimulation() {
         isRunning = false;
         if (animId) cancelAnimationFrame(animId);
@@ -245,6 +291,16 @@ document.addEventListener("DOMContentLoaded", () => {
         // Setup active challenge constraints
         const challenge = challengeData[activeChallenge];
         challenge.setup();
+
+        // Update all UI labels from slider values
+        const mpa = parseFloat(sliderPressure.value);
+        valPressure.textContent = mpa.toFixed(2) + " MPa (" + (mpa * 10.0).toFixed(1) + " bar)";
+        valTemp.textContent = sliderTemp.value + " °C";
+        valGrind.textContent = selectGrind.options[selectGrind.selectedIndex].text.split(" (")[0];
+        valThickness.textContent = parseFloat(sliderThickness.value).toFixed(1) + " cm";
+        valCompression.textContent = sliderCompression.value + " %";
+        valMass.textContent = parseFloat(sliderMass.value).toFixed(1) + " g";
+        valMaxTime.textContent = sliderMaxTime.value + " s";
 
         // Size canvases dynamically before drawing
         resizeCanvases();
@@ -270,6 +326,8 @@ document.addEventListener("DOMContentLoaded", () => {
         cupLiquid.style.height = "0%";
         cupCrema.style.opacity = "0";
 
+        checkObjectives();
+
         logDebug("Simulation reset. Ready.");
     }
 
@@ -277,7 +335,7 @@ document.addEventListener("DOMContentLoaded", () => {
         isRunning = true;
         btnStart.textContent = "⏸ Pause Brew";
         btnStart.classList.add("btn-danger");
-        logDebug(`Brew started: Pressure=${sliderPressure.value} bar, Temp=${sliderTemp.value}°C, Tamping=${sliderTamping.value} kg`);
+        logDebug(`Brew started: Pressure=${sliderPressure.value} MPa, Temp=${sliderTemp.value}°C, Thickness=${sliderThickness.value} cm, Compression=${sliderCompression.value}%, Mass=${sliderMass.value} g`);
         animate();
     }
 
@@ -286,13 +344,15 @@ document.addEventListener("DOMContentLoaded", () => {
         btnStart.textContent = "▶ Start Brew";
         btnStart.classList.remove("btn-danger");
         logDebug("Simulation paused.");
+        checkObjectives();
     }
 
     // Mathematical solver step
     function simulationStep() {
-        // 1. Calculate porosity epsilon based on tamping pressure (5 to 30 kg)
-        const tamp = parseFloat(sliderTamping.value);
-        const epsilon = 0.48 - 0.005 * tamp;
+        // 1. Calculate porosity epsilon based on tamping compression and powder mass
+        const mass = parseFloat(sliderMass.value);
+        const comp = parseFloat(sliderCompression.value);
+        const epsilon = 0.70 - 0.03 * mass - 0.3 * (comp / 100.0);
         const rho_b = (1.0 - epsilon) * rho_s;
         const rho_Cp_eff = (1.0 - epsilon) * rho_s * Cp_s + epsilon * rho_f * Cp_f;
 
@@ -312,8 +372,16 @@ document.addEventListener("DOMContentLoaded", () => {
         // 3. Fluid dynamics
         const T_avg = Array.from(T).reduce((a,b)=>a+b, 0) / Nx;
         const viscosity = getViscosity(T_avg);
-        const dP = parseFloat(sliderPressure.value) * 1e5;
-        const u = (permeability / viscosity) * (dP / L);
+        const dP = parseFloat(sliderPressure.value) * 1e6; // Slider is in MPa
+        L = parseFloat(sliderThickness.value) / 100.0; // Slider is in cm, convert to m
+        dx = L / (Nx - 1);
+        const u_physical = (permeability / viscosity) * (dP / L);
+        
+        // CFL Stability constraint: u * dt / (epsilon * dx) <= 1.0
+        // We set a safety limit of Co_limit = 0.95
+        const Co_limit = 0.95;
+        const max_u = (Co_limit * dx * epsilon) / dt;
+        const u = Math.min(u_physical, max_u);
 
         // Flow rate (mL/s) for A = 20 cm2
         const A = 2e-3;
@@ -401,8 +469,9 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         // Calculate yields
-        const tamp = parseFloat(sliderTamping.value);
-        const epsilon = 0.48 - 0.005 * tamp;
+        const mass = parseFloat(sliderMass.value);
+        const comp = parseFloat(sliderCompression.value);
+        const epsilon = 0.70 - 0.03 * mass - 0.3 * (comp / 100.0);
         const rho_b = (1.0 - epsilon) * rho_s;
         const total_dry_coffee_mass = rho_b * (L * 2e-3);
         const initial_caffeine = S1_0 * total_dry_coffee_mass;
@@ -468,28 +537,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         // Validate challenge objectives
-        if (activeChallenge !== "none") {
-            const challenge = challengeData[activeChallenge];
-            const validation = challenge.validate(t, totalWaterVolume, yieldCaffeine, yieldBitter);
-            
-            const bullets = [
-                document.getElementById("obj-1"),
-                document.getElementById("obj-2"),
-                document.getElementById("obj-3")
-            ];
-            
-            for (let bIdx = 0; bIdx < 3; bIdx++) {
-                if (validation.status[bIdx]) {
-                    bullets[bIdx].innerHTML = `<span class="obj-bullet" style="color: var(--accent-green)">🟢</span> <del>${challenge.objectives[bIdx]}</del>`;
-                } else {
-                    bullets[bIdx].innerHTML = `<span class="obj-bullet" style="color: var(--accent-red)">🔴</span> ${challenge.objectives[bIdx]}`;
-                }
-            }
-            
-            if (validation.success) {
-                triggerVictory(challenge.lesson);
-            }
-        }
+        checkObjectives();
 
         // Draw visuals
         drawPuck();
@@ -501,6 +549,7 @@ document.addEventListener("DOMContentLoaded", () => {
             btnStart.textContent = "▶ Brew Finished";
             btnStart.classList.remove("btn-danger");
             logDebug(`Simulation complete. Final Volume: ${totalWaterVolume.toFixed(1)} mL, Caffeine Yield: ${yieldCaffeine.toFixed(1)}%, Bitter Yield: ${yieldBitter.toFixed(1)}%`);
+            checkObjectives();
         } else {
             animId = requestAnimationFrame(animate);
         }
@@ -801,7 +850,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const graphW = w - padX - 15;
         const graphH = h - padY - 10;
 
-        // Porosity range: 0.3 to 0.5
+        // Porosity range: 0.2 to 0.6
         // Y-axis: Permeability (scaled relative to k0_val in 10^-15 m2)
         const k0_val = parseFloat(sliderK0.value); // e.g. 6.0
 
@@ -810,7 +859,7 @@ document.addEventListener("DOMContentLoaded", () => {
             return k0_val * (Math.pow(eps, 3) / Math.pow(1 - eps, 2)) / (Math.pow(0.4, 3) / Math.pow(0.6, 2));
         };
 
-        const maxPerm = getPerm(0.5);
+        const maxPerm = getPerm(0.6);
 
         // Draw grid
         ctx.strokeStyle = "rgba(255, 255, 255, 0.05)";
@@ -827,8 +876,8 @@ document.addEventListener("DOMContentLoaded", () => {
             ctx.stroke();
             ctx.fillText((maxPerm * (g / 3)).toFixed(1), 5, y + 3);
 
-            // X-lines (0.3 to 0.5)
-            const epsVal = 0.3 + g * (0.2 / 3);
+            // X-lines (0.2 to 0.6)
+            const epsVal = 0.2 + g * (0.4 / 3);
             const x = padX + (g / 3) * graphW;
             ctx.beginPath();
             ctx.moveTo(x, padY);
@@ -854,7 +903,7 @@ document.addEventListener("DOMContentLoaded", () => {
         ctx.lineWidth = 2;
         ctx.beginPath();
         for (let i = 0; i <= 20; i++) {
-            const eps = 0.3 + i * (0.2 / 20);
+            const eps = 0.2 + i * (0.4 / 20);
             const perm = getPerm(eps);
             const x = padX + (i / 20) * graphW;
             const y = padY + graphH * (1 - perm / maxPerm);
@@ -864,11 +913,12 @@ document.addEventListener("DOMContentLoaded", () => {
         ctx.stroke();
 
         // Draw current operating point dot
-        const tamp = parseFloat(sliderTamping.value);
-        const curEps = 0.48 - 0.005 * tamp;
+        const mass = parseFloat(sliderMass.value);
+        const comp = parseFloat(sliderCompression.value);
+        const curEps = 0.70 - 0.03 * mass - 0.3 * (comp / 100.0);
         const curPerm = getPerm(curEps);
 
-        const x_cur = padX + ((curEps - 0.3) / 0.2) * graphW;
+        const x_cur = padX + ((curEps - 0.2) / 0.4) * graphW;
         const y_cur = padY + graphH * (1 - curPerm / maxPerm);
 
         // Dotted indicator
@@ -973,7 +1023,7 @@ document.addEventListener("DOMContentLoaded", () => {
             validate: (t, vol, yieldCaff, yieldBit) => {
                 const c1 = yieldCaff >= 85.0;
                 const c2 = yieldBit < 30.0;
-                const c3 = t <= 30.0;
+                const c3 = t <= 30.1; // 30.1s to allow standard numerical step-overshoot
                 return {
                     status: [c1, c2, c3],
                     success: c1 && c2 && c3 && !isRunning && t > 0
@@ -982,7 +1032,7 @@ document.addEventListener("DOMContentLoaded", () => {
             lesson: "Caffeine has a lower activation energy (Ea = 30 kJ/mol) than bitter compounds (Ea = 55 kJ/mol). By brewing at a moderate-low temperature (e.g. 85°C - 88°C), the rate constant for caffeine remains high, while the rate constant for bitterness is heavily suppressed, enabling selective mass transfer!"
         },
         porous: {
-            desc: "The Turkish Choke (Porous Flow): Brew at least 30 mL of coffee using the Fine (Turkish style) grind. Hint: Turkish coffee creates very high flow resistance. You will need to scale the brew time, reduce tamping (to increase porosity), or increase pressure.",
+            desc: "The Turkish Choke (Porous Flow): Brew at least 30 mL of coffee using the Fine (Turkish style) grind. Hint: Turkish coffee creates very high flow resistance. You will need to scale the brew time, reduce volume compression (to increase porosity), or increase pressure.",
             objectives: [
                 "Grind size set to Fine (Turkish)",
                 "Brewed Volume >= 30.0 mL",
@@ -997,7 +1047,7 @@ document.addEventListener("DOMContentLoaded", () => {
             validate: (t, vol, yieldCaff, yieldBit) => {
                 const c1 = selectGrind.value === "fine";
                 const c2 = vol >= 30.0;
-                const c3 = t >= 60.0;
+                const c3 = t >= 59.9; // 59.9s to allow standard numerical step-undershoot
                 return {
                     status: [c1, c2, c3],
                     success: c1 && c2 && c3 && !isRunning && t > 0
@@ -1017,7 +1067,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 sliderTemp.value = 100;
                 sliderTemp.dispatchEvent(new Event("input"));
                 lockSlider(sliderTemp);
-                sliderPressure.value = 9;
+                sliderPressure.value = 0.90; // 0.90 MPa = 9.0 bar
                 sliderPressure.dispatchEvent(new Event("input"));
                 lockSlider(sliderPressure);
             },
@@ -1040,7 +1090,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function unlockAllSliders() {
-        const elements = [sliderPressure, sliderTemp, selectGrind, sliderTamping, sliderMaxTime, sliderEa1, sliderEa2, sliderK0];
+        const elements = [sliderPressure, sliderTemp, selectGrind, sliderCompression, sliderThickness, sliderMass, sliderMaxTime, sliderEa1, sliderEa2, sliderK0];
         elements.forEach(el => {
             el.disabled = false;
             el.closest(".control-group")?.classList.remove("locked");
@@ -1057,4 +1107,7 @@ document.addEventListener("DOMContentLoaded", () => {
         victoryLesson.innerHTML = `<strong>Lesson:</strong> ${lessonText}`;
         victoryModal.style.display = "flex";
     }
+
+    // Initialize values at the very end after all variables are defined
+    resetSimulation();
 });

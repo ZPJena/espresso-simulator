@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thermos Mug Designer - TC I Lecture 7</title>
+    <link rel="stylesheet" href="cooling_style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="logo-area">
+                <span class="badge">TC I Lecture 7</span>
+                <h1>Thermos Mug Designer</h1>
+                <p class="subtitle">FEM & Multi-Layer Radial Conduction: Try Ideas Before Building</p>
+                <nav class="app-nav">
+                    <a href="index.html" class="nav-item">☕ Espresso (Class 1 & 2)</a>
+                    <a href="pizza.html" class="nav-item">🍕 Pizza (Class 4)</a>
+                    <a href="mixer.html" class="nav-item">🌀 Coffee Stirring (Class 5)</a>
+                    <a href="reactor.html" class="nav-item">📱 Phone Heat (Class 6)</a>
+                    <a href="cooling.html" class="nav-item active">❄️ Thermos Design (Class 7)</a>
+                    <a href="playground.html" class="nav-item">🔬 Equation Playground</a>
+                </nav>
+            </div>
+            <div class="framing-quote">
+                "Virtual prototyping lets us test thousands of material and thickness options in seconds before building a single physical model."
+            </div>
+        </header>
+
+        <!-- Main Workspace -->
+        <main class="app-workspace">
+            <!-- Left Column: Controls -->
+            <div class="left-column">
+                <section class="control-panel glass-card">
+                    <h2><span class="icon">⚙️</span> Mug Wall Designer</h2>
+                    
+                    <div class="control-group">
+                        <label for="param-inner">Innenwand (Inner Wall)</label>
+                        <select id="param-inner">
+                            <option value="steel" selected>Edelstahl (Stainless Steel, 15 W/mK)</option>
+                            <option value="ceramic">Keramik (Ceramic, 1.5 W/mK)</option>
+                            <option value="plastic">Kunststoff (Plastic, 0.2 W/mK)</option>
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="param-insulation">Isolationsschicht (Insulation Layer)</label>
+                        <select id="param-insulation">
+                            <option value="vacuum" selected>Vakuumspalt (Vacuum, 0.001 W/mK)</option>
+                            <option value="foam">Polyurethan-Schaum (Foam, 0.03 W/mK)</option>
+                            <option value="air">Luftspalt (Air Gap, 0.026 W/mK)</option>
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="param-outer">Außenwand (Outer Wall)</label>
+                        <select id="param-outer">
+                            <option value="steel" selected>Edelstahl (Stainless Steel, 15 W/mK)</option>
+                            <option value="ceramic">Keramik (Ceramic, 1.5 W/mK)</option>
+                            <option value="plastic">Kunststoff (Plastic, 0.2 W/mK)</option>
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label class="toggle-container">
+                            <input type="checkbox" id="param-lid" checked>
+                            <span class="checkmark"></span>
+                            <span class="toggle-label">Deckel geschlossen (Lid Closed)</span>
+                        </label>
+                        <p class="control-help">Open lids allow massive heat loss via evaporative cooling (h = 80 vs. 5 W/m²K).</p>
+                    </div>
+
+                    <div class="control-group">
+                        <div class="slider-header">
+                            <label for="param-simspeed">Simulationsgeschwindigkeit (Sim Speed)</label>
+                            <span class="slider-value" id="val-simspeed">1.0x</span>
+                        </div>
+                        <input type="range" id="param-simspeed" min="0.5" max="3.0" step="0.5" value="1.0">
+                    </div>
+
+                    <div class="action-buttons">
+                        <button id="btn-reset" class="btn btn-secondary">Reset Sim</button>
+                        <button id="btn-pause" class="btn btn-primary">Start Sim</button>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Middle Column: Visualizer -->
+            <div class="middle-column">
+                <section class="visualizer glass-card">
+                    <h2><span class="icon">☕</span> Radial Temperature Profile (Concentric View)</h2>
+                    <div class="canvas-container">
+                        <canvas id="canvas-field" width="400" height="400"></canvas>
+                    </div>
+                    <div class="hud-readout">
+                        <div class="hud-item">
+                            <span class="hud-label">Coffee Temp:</span>
+                            <span class="hud-value" id="hud-coffee-temp">90.0 °C</span>
+                        </div>
+                        <div class="hud-item">
+                            <span class="hud-label">Outer Wall Temp:</span>
+                            <span class="hud-value" id="hud-outer-temp">25.0 °C</span>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Right Column: Charts & Didactic Info -->
+            <div class="right-column">
+                <section class="analytics glass-card">
+                    <h2><span class="icon">📈</span> Coffee Temperature Curve</h2>
+                    <div class="chart-container">
+                        <canvas id="canvas-chart" width="360" height="200"></canvas>
+                    </div>
+                </section>
+
+                <section class="didactic-info glass-card">
+                    <h2><span class="icon">🎓</span> Lecture 7 Didactic Bridge</h2>
+                    <div class="didactic-content">
+                        <h3>Design-Before-Building Laboratory</h3>
+                        <p>In chemical engineering, running laboratory test runs with real reactors is expensive and time-consuming. We use numerical simulation to perform parameter sweeps and optimize geometry virtually.</p>
+                        <p>Designing a travel mug is a multi-layer radial transient conduction problem. We must keep the coffee inside hot for a 2-hour lecture (\(>60^\circ\text{C}\)), but prevent the outer casing from getting too hot (\(<50^\circ\text{C}\)) to hold comfortably.</p>
+                        <p>By simulating steel vs. ceramic inner walls, vacuum vs. foam insulation, and lid positions, students learn how different thermal resistances add up in series to dictate total heat flux.</p>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Load MathJax for LaTeX rendering -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="cooling_script.js?v=1.0.1"></script>
+</body>
+</html>

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smartphone Thermal Simulator - TC I Lecture 6</title>
+    <link rel="stylesheet" href="reactor_style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="logo-area">
+                <span class="badge">TC I Lecture 6</span>
+                <h1>Smartphone Thermal Simulator</h1>
+                <p class="subtitle">FEM & Thermal Conductive Bottlenecks: Find the Weak Spot</p>
+                <nav class="app-nav">
+                    <a href="index.html" class="nav-item">☕ Espresso (Class 1 & 2)</a>
+                    <a href="pizza.html" class="nav-item">🍕 Pizza (Class 4)</a>
+                    <a href="mixer.html" class="nav-item">🌀 Coffee Stirring (Class 5)</a>
+                    <a href="reactor.html" class="nav-item active">📱 Phone Heat (Class 6)</a>
+                    <a href="cooling.html" class="nav-item">❄️ Thermos Design (Class 7)</a>
+                    <a href="playground.html" class="nav-item">🔬 Equation Playground</a>
+                </nav>
+            </div>
+            <div class="framing-quote">
+                "Average temperatures look perfectly fine, but localized hotspots trigger system crashes and thermal runaways."
+            </div>
+        </header>
+
+        <!-- Main Workspace -->
+        <main class="app-workspace">
+            <!-- Left Column: Controls -->
+            <div class="left-column">
+                <section class="control-panel glass-card">
+                    <h2><span class="icon">⚙️</span> Control Panel</h2>
+                    
+                    <div class="control-group">
+                        <div class="slider-header">
+                            <label for="param-load">CPU-Auslastung (Gaming Load)</label>
+                            <span class="slider-value" id="val-load">80 %</span>
+                        </div>
+                        <input type="range" id="param-load" min="0" max="100" step="5" value="80">
+                        <div class="slider-labels">
+                            <span>0% (Idle)</span>
+                            <span>50% (Standard)</span>
+                            <span>100% (Overclocked)</span>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="param-paste">Wärmeleitpaste (Thermal Paste status)</label>
+                        <select id="param-paste">
+                            <option value="good" selected>Hochwertig (Excellent, 4.0 W/mK)</option>
+                            <option value="degraded">Ausgetrocknet (Degraded/Air Gap, 0.05 W/mK)</option>
+                        </select>
+                        <p class="control-help">Poor paste creates a local thermal barrier (bottleneck), trapping heat inside the CPU.</p>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="param-casing">Gehäusematerial (Case Material)</label>
+                        <select id="param-casing">
+                            <option value="aluminum" selected>Aluminium (High Conductive, 200 W/mK)</option>
+                            <option value="plastic">Kunststoff (Insulating Plastic, 0.2 W/mK)</option>
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="param-grip">Handhaltung (Grip blocking location)</label>
+                        <select id="param-grip">
+                            <option value="none" selected>Nicht gehalten (Lying on table)</option>
+                            <option value="cpu">Ecke links halten (Holding CPU corner)</option>
+                            <option value="bottom">Untere Hälfte (Holding bottom edge)</option>
+                        </select>
+                        <p class="control-help">Your hand blocks heat dissipation (convection $h \to 0$) in the covered area.</p>
+                    </div>
+
+                    <div class="control-group">
+                        <div class="slider-header">
+                            <label for="param-simspeed">Simulationsgeschwindigkeit (Sim Speed)</label>
+                            <span class="slider-value" id="val-simspeed">1.0x</span>
+                        </div>
+                        <input type="range" id="param-simspeed" min="0.5" max="3.0" step="0.5" value="1.0">
+                    </div>
+
+                    <div class="action-buttons">
+                        <button id="btn-reset" class="btn btn-secondary">Reset Sim</button>
+                        <button id="btn-pause" class="btn btn-primary">Start Sim</button>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Middle Column: Visualizer -->
+            <div class="middle-column">
+                <section class="visualizer glass-card">
+                    <h2><span class="icon">📱</span> 2D Temperature Field & Device Layout</h2>
+                    <div class="canvas-container">
+                        <canvas id="canvas-field" width="450" height="300"></canvas>
+                    </div>
+                    <div class="hud-readout">
+                        <div class="hud-item">
+                            <span class="hud-label">CPU Temp:</span>
+                            <span class="hud-value" id="hud-cpu-temp">30.0 °C</span>
+                        </div>
+                        <div class="hud-item">
+                            <span class="hud-label">CPU Performance:</span>
+                            <span class="hud-value" id="hud-throttling">100.0%</span>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Right Column: Charts & Didactic Info -->
+            <div class="right-column">
+                <section class="analytics glass-card">
+                    <h2><span class="icon">📈</span> Thermal History</h2>
+                    <div class="chart-container">
+                        <canvas id="canvas-chart" width="360" height="200"></canvas>
+                    </div>
+                </section>
+
+                <section class="didactic-info glass-card">
+                    <h2><span class="icon">🎓</span> Lecture 6 Didactic Bridge</h2>
+                    <div class="didactic-content">
+                        <h3>Local Risks & Bottleneck Finders</h3>
+                        <p>In chemical engineering, an exothermic tubular reactor can develop a localized <strong>hot spot</strong> due to high reaction rates and poor heat extraction. If unchecked, this leads to thermal runaway.</p>
+                        <p>Similarly, a gaming smartphone is an assembly of highly conducting and insulating layers. When the CPU runs at maximum load, it generates heat. If a bottleneck exists (like degraded thermal paste or hand blocking convective cooling), heat is trapped locally.</p>
+                        <p>When the CPU temperature crosses \(80^\circ\text{C}\), safety algorithms trigger <strong>thermal throttling</strong> to prevent hardware destruction. Designing thermal bridges keeps local temperatures safe.</p>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Load MathJax for LaTeX rendering -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="reactor_script.js?v=1.0.1"></script>
+</body>
+</html>
