@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Coffee Stirring Simulator - TC I Lecture 5</title>
-    <link rel="stylesheet" href="mixer_style.css">
+    <link rel="stylesheet" href="mixer_style.css?v=1.0.9">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -17,14 +17,6 @@
                 <span class="badge">TC I Lecture 5</span>
                 <h1>Coffee Stirring Simulator</h1>
                 <p class="subtitle">FEM & Transport Phenomena Bridge: See the Invisible Flow</p>
-                <nav class="app-nav">
-                    <a href="index.html" class="nav-item">☕ Espresso (Class 1 & 2)</a>
-                    <a href="pizza.html" class="nav-item">🍕 Pizza (Class 4)</a>
-                    <a href="mixer.html" class="nav-item active">🌀 Coffee Stirring (Class 5)</a>
-                    <a href="reactor.html" class="nav-item">📱 Phone Heat (Class 6)</a>
-                    <a href="cooling.html" class="nav-item">❄️ Thermos Design (Class 7)</a>
-                    <a href="playground.html" class="nav-item">🔬 Equation Playground</a>
-                </nav>
             </div>
             <div class="framing-quote">
                 "Experiment tells us whether the fluid is mixed. Simulation shows the flow patterns, dead zones, and shear layers."
@@ -33,6 +25,43 @@
 
         <!-- Main Workspace -->
         <main class="app-workspace">
+            <!-- Sidebar Navigation -->
+            <aside class="sidebar glass-card">
+                <h2>🔬 Simulators</h2>
+
+                <div class="nav-group">
+                    <h3>Fluid & Transport</h3>
+                    <a href="eq_navier.html" class="eq-nav-btn" id="nav-eq-navier">Navier-Stokes (L2)</a>
+                    <a href="eq_stokes.html" class="eq-nav-btn" id="nav-eq-stokes">Stokes Settling (L17)</a>
+                    <a href="eq_ergun.html" class="eq-nav-btn" id="nav-eq-ergun">Ergun Porous Flow (L12/13)</a>
+                </div>
+
+                <div class="nav-group">
+                    <h3>Mass Transfer</h3>
+                    <a href="eq_twofilm.html" class="eq-nav-btn" id="nav-eq-twofilm">Two-Film Theory (L7/12)</a>
+                    <a href="eq_mccabe.html" class="eq-nav-btn" id="nav-eq-mccabe">McCabe-Thiele (L11)</a>
+                    <a href="eq_adsorption.html" class="eq-nav-btn" id="nav-eq-adsorption">Adsorption Isotherms (L16)</a>
+                </div>
+
+                <div class="nav-group">
+                    <h3>Kinetics & Reactors</h3>
+                    <a href="eq_butler.html" class="eq-nav-btn" id="nav-eq-butler">Butler-Volmer (L3)</a>
+                    <a href="eq_selectivity.html" class="eq-nav-btn" id="nav-eq-selectivity">Reactor Selectivity (L8)</a>
+                    <a href="eq_hatta.html" class="eq-nav-btn" id="nav-eq-hatta">Hatta Number (L7)</a>
+                    <a href="eq_thiele.html" class="eq-nav-btn" id="nav-eq-thiele">Thiele Modulus (L6/7)</a>
+                    <a href="eq_crystallization.html" class="eq-nav-btn" id="nav-eq-crystallization">Crystallization (L14/15)</a>
+                </div>
+
+                <div class="nav-group">
+                    <h3>Applications</h3>
+                    <a href="index.html" class="eq-nav-btn" id="nav-app-espresso">☕ Espresso</a>
+                    <a href="pizza.html" class="eq-nav-btn" id="nav-app-pizza">🍕 Pizza Conduction</a>
+                    <a href="mixer.html" class="eq-nav-btn active" id="nav-app-mixer">🌀 Coffee Stirring</a>
+                    <a href="reactor.html" class="eq-nav-btn" id="nav-app-reactor">📱 Phone Heat</a>
+                    <a href="cooling.html" class="eq-nav-btn" id="nav-app-cooling">❄️ Thermos Design</a>
+                </div>
+            </aside>
+
             <!-- Left Column: Controls -->
             <div class="left-column">
                 <section class="control-panel glass-card">

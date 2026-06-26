@@ -134,7 +134,7 @@ body {
 /* Main Workspace */
 .app-workspace {
     display: grid;
-    grid-template-columns: 320px 1fr 380px;
+    grid-template-columns: 240px 320px 1fr 380px;
     gap: 1.5rem;
 }
 
@@ -441,4 +441,64 @@ canvas#canvas-field {
 
 .didactic-content strong {
     color: var(--text-primary);
+}
+
+
+/* Sidebar Navigation */
+.sidebar h2 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding-bottom: 0.5rem;
+}
+
+.nav-group {
+    margin-bottom: 1.5rem;
+}
+
+.nav-group h3 {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+    padding-left: 0.25rem;
+}
+
+.eq-nav-btn {
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: 1px solid transparent;
+    color: var(--text-secondary);
+    padding: 0.6rem 0.75rem;
+    font-size: 0.9rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: var(--font-sans);
+    transition: all 0.2s ease;
+    margin-bottom: 0.25rem;
+    display: block;
+    text-decoration: none;
+}
+
+.eq-nav-btn:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.03);
+    border-color: var(--border-card);
+}
+
+.eq-nav-btn.active {
+    color: var(--accent-blue);
+    background: rgba(0, 210, 255, 0.08);
+    border-color: rgba(0, 210, 255, 0.3);
+    font-weight: 600;
+}
+
+/* Hide sidebar on narrow screens */
+@media (max-width: 1200px) {
+    .sidebar {
+        display: none !important;
+    }
 }

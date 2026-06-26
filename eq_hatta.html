@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multiphysics Equation Playground - TC I Lecture 1</title>
+    <link rel="stylesheet" href="playground_style.css?v=1.0.9">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+                        <header class="app-header">
+            <div class="logo-area">
+                <span class="badge">TC I Lecture 1</span>
+                <h1>Equation Playground</h1>
+                <p class="subtitle">FEM & Mathematical Models: Turn Formulas into Pictures</p>
+            </div>
+            <div class="framing-quote">
+                "Experiment tells us what happened. Theory tells us why it should happen. FEM shows where and when it happens."
+            </div>
+        </header>
+
+        <!-- Main Workspace -->
+        <main class="app-workspace">
+            <!-- Sidebar Navigation -->
+            <aside class="sidebar glass-card">
+                <h2>🔬 Simulators</h2>
+
+                <div class="nav-group">
+                    <h3>Fluid & Transport</h3>
+                    <a href="eq_navier.html" class="eq-nav-btn" id="nav-eq-navier">Navier-Stokes (L2)</a>
+                    <a href="eq_stokes.html" class="eq-nav-btn" id="nav-eq-stokes">Stokes Settling (L17)</a>
+                    <a href="eq_ergun.html" class="eq-nav-btn" id="nav-eq-ergun">Ergun Porous Flow (L12/13)</a>
+                </div>
+
+                <div class="nav-group">
+                    <h3>Mass Transfer</h3>
+                    <a href="eq_twofilm.html" class="eq-nav-btn" id="nav-eq-twofilm">Two-Film Theory (L7/12)</a>
+                    <a href="eq_mccabe.html" class="eq-nav-btn" id="nav-eq-mccabe">McCabe-Thiele (L11)</a>
+                    <a href="eq_adsorption.html" class="eq-nav-btn" id="nav-eq-adsorption">Adsorption Isotherms (L16)</a>
+                </div>
+
+                <div class="nav-group">
+                    <h3>Kinetics & Reactors</h3>
+                    <a href="eq_butler.html" class="eq-nav-btn" id="nav-eq-butler">Butler-Volmer (L3)</a>
+                    <a href="eq_selectivity.html" class="eq-nav-btn" id="nav-eq-selectivity">Reactor Selectivity (L8)</a>
+                    <a href="eq_hatta.html" class="eq-nav-btn active" id="nav-eq-hatta">Hatta Number (L7)</a>
+                    <a href="eq_thiele.html" class="eq-nav-btn" id="nav-eq-thiele">Thiele Modulus (L6/7)</a>
+                    <a href="eq_crystallization.html" class="eq-nav-btn" id="nav-eq-crystallization">Crystallization (L14/15)</a>
+                </div>
+
+                <div class="nav-group">
+                    <h3>Applications</h3>
+                    <a href="index.html" class="eq-nav-btn" id="nav-app-espresso">☕ Espresso</a>
+                    <a href="pizza.html" class="eq-nav-btn" id="nav-app-pizza">🍕 Pizza Conduction</a>
+                    <a href="mixer.html" class="eq-nav-btn" id="nav-app-mixer">🌀 Coffee Stirring</a>
+                    <a href="reactor.html" class="eq-nav-btn" id="nav-app-reactor">📱 Phone Heat</a>
+                    <a href="cooling.html" class="eq-nav-btn" id="nav-app-cooling">❄️ Thermos Design</a>
+                </div>
+            </aside>
+
+            <!-- Active Equation Workspace -->
+            <div class="main-panel">
+                <section class="equation-panel glass-card">
+                    <!-- Title and Mathematical Equation -->
+                    <div class="eq-header">
+                        <div class="title-row">
+                            <span class="badge" id="lecture-badge">L7 Macrokinetics II</span>
+                            <h2 id="eq-title">Hatta Number (Fluid-Fluid Macrokinetics)</h2>
+                        </div>
+                        <div class="eq-formula-box">
+                            <div id="eq-formula">\[ Ha = \delta \cdot \sqrt{\frac{k_v \cdot c_B^{n-1}}{D_{A}}} \]</div>
+                        </div>
+                    </div>
+
+                    <!-- Split Workspace: Sliders vs Canvas -->
+                    <div class="workspace-grid">
+                        <div class="controls-column">
+                            <h3><span class="icon">⚙️</span> Control Sliders</h3>
+                            <div class="sliders-container" id="sliders-box">
+                                <!-- Dynamic sliders inserted here via JS -->
+                            </div>
+
+                            <div class="playback-controls" id="playback-box" style="display: none;">
+                                <button id="btn-play" class="btn btn-primary">▶ Start Animation</button>
+                                <button id="btn-reset" class="btn btn-secondary">🔄 Reset</button>
+                            </div>
+
+                            <!-- Real-time outputs/derived metrics -->
+                            <div class="outputs-panel" id="outputs-box">
+                                <h3>📊 Calculations</h3>
+                                <div id="outputs-list">
+                                    <!-- Dynamic parameters output here -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="visualizer-column">
+                            <h3><span class="icon">👁️</span> Interactive Visualizer</h3>
+                            <div class="canvas-container">
+                                <div class="canvas-wrapper">
+                                    <canvas id="playground-canvas" width="550" height="420"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pedagogical explanation section -->
+                    <div class="eq-description-box">
+                        <h3>Didactical Background (Technical Chemistry)</h3>
+                        <p id="eq-desc">The Hatta number ($Ha$) compares the rate of reaction inside a liquid boundary film to the rate of diffusion through it. It governs fluid-fluid mass transfer with reaction (Class 7). The microscopic visualizer shows solute gas $A$ (orange) dissolving from the gas phase (left) through the gas-liquid interface into the liquid boundary film ($\delta$), where it reacts with bulk reactant $B$ (blue) to yield product $P$ (purple). Product $P$ then diffuses away into the bulk liquid. Reactant $B$ is kept in excess ($c_{B,0} \gg c_A^*$), matching typical physical absorption. When $Ha < 0.3$ (slow reaction), $A$ diffuses deep into the bulk liquid before reacting. When $Ha > 3.0$ (fast reaction), $A$ is consumed rapidly inside the thin liquid film boundary layer, visualising film-limited reaction-diffusion.</p>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- MathJax for rendering equations -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="eq_shared.js?v=1.0.14"></script>
+    <script src="eq_hatta_script.js?v=1.0.9"></script>
+</body>
+</html>

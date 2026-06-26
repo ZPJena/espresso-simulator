@@ -129,7 +129,7 @@ body {
 /* Main Workspace Grid: Sidebar & Content */
 .app-workspace {
     display: grid;
-    grid-template-columns: 280px 1fr;
+    grid-template-columns: 240px 1fr;
     gap: 1.5rem;
 }
 
