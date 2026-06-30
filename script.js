@@ -527,8 +527,8 @@ document.addEventListener("DOMContentLoaded", () => {
         statTaste.className = `taste-badge ${tasteClass}`;
 
         // Animate Cup
-        // Max volume is 60mL. Set height accordingly.
-        const cupPercentage = Math.min(85, (totalWaterVolume / 60.0) * 85);
+        // Max volume is 250mL. Set height accordingly.
+        const cupPercentage = Math.min(85, (totalWaterVolume / 250.0) * 85);
         cupLiquid.style.height = `${cupPercentage}%`;
         
         // Fade in crema layer as coffee pours
@@ -543,8 +543,8 @@ document.addEventListener("DOMContentLoaded", () => {
         drawPuck();
         drawPlot();
 
-        // End brew if dry or maxTime elapsed
-        if (t >= maxTime || totalWaterVolume >= 60.0) {
+        // End brew when maxTime is reached
+        if (t >= maxTime) {
             isRunning = false;
             btnStart.textContent = "▶ Brew Finished";
             btnStart.classList.remove("btn-danger");
@@ -1111,3 +1111,220 @@ document.addEventListener("DOMContentLoaded", () => {
     // Initialize values at the very end after all variables are defined
     resetSimulation();
 });
+
+// Setup Mobile Drawer Menu and Responsive Layout Optimization
+function setupMobileMenu() {
+    // 1. Inject Menu Toggle Button and Backdrop
+    const header = typeof document !== "undefined" && document.querySelectorAll ? document.querySelectorAll(".app-header")[0] : null;
+    const sidebar = typeof document !== "undefined" && document.querySelectorAll ? document.querySelectorAll(".sidebar")[0] : null;
+    
+    if (header && sidebar && document.createElement) {
+        // Create mobile toggle button
+        const toggleBtn = document.createElement("button");
+        toggleBtn.className = "mobile-nav-toggle glass-card";
+        toggleBtn.innerHTML = '<span class="toggle-icon">🔬</span> Simulators';
+        
+        // Find logo area to place toggle button
+        const logoArea = header.querySelector ? header.querySelector(".logo-area") : null;
+        if (logoArea && logoArea.appendChild) {
+            logoArea.appendChild(toggleBtn);
+        } else if (header.appendChild) {
+            header.appendChild(toggleBtn);
+        }
+        
+        // Create backdrop overlay
+        const backdrop = document.createElement("div");
+        backdrop.className = "nav-backdrop";
+        if (document.body && document.body.appendChild) {
+            document.body.appendChild(backdrop);
+        }
+        
+        // Toggle action
+        toggleBtn.addEventListener("click", (e) => {
+            if (e.stopPropagation) e.stopPropagation();
+            if (document.body && document.body.classList) {
+                document.body.classList.toggle("nav-open");
+            }
+        });
+        
+        // Close on click outside (backdrop)
+        backdrop.addEventListener("click", () => {
+            if (document.body && document.body.classList) {
+                document.body.classList.remove("nav-open");
+            }
+        });
+        
+        // Close drawer when a navigation button is clicked
+        const navBtns = sidebar.querySelectorAll ? sidebar.querySelectorAll("a, button") : [];
+        navBtns.forEach(btn => {
+            btn.addEventListener("click", () => {
+                if (document.body && document.body.classList) {
+                    document.body.classList.remove("nav-open");
+                }
+            });
+        });
+    }
+    
+    // 2. Inject Responsive Stylesheet
+    if (typeof document !== "undefined" && document.createElement) {
+        const style = document.createElement("style");
+        style.innerHTML = `
+            /* Mobile Toggle Button */
+            .mobile-nav-toggle {
+                display: none;
+                align-items: center;
+                gap: 0.5rem;
+                background: rgba(255, 255, 255, 0.04) !important;
+                border: 1px solid rgba(255, 255, 255, 0.08) !important;
+                color: #fff !important;
+                padding: 0.4rem 0.8rem !important;
+                border-radius: 8px !important;
+                font-size: 0.8rem !important;
+                font-weight: 600 !important;
+                cursor: pointer !important;
+                transition: all 0.2s ease !important;
+                margin-left: 1rem;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+            }
+            .mobile-nav-toggle:hover {
+                background: rgba(255, 255, 255, 0.1) !important;
+                border-color: rgba(255, 255, 255, 0.2) !important;
+            }
+
+            @media (max-width: 1200px) {
+                .mobile-nav-toggle {
+                    display: flex;
+                }
+                .logo-area {
+                    display: flex;
+                    align-items: center;
+                    flex-wrap: wrap;
+                }
+                
+                /* Sidebar Drawer Style */
+                .sidebar {
+                    display: block !important;
+                    position: fixed !important;
+                    top: 0 !important;
+                    left: 0 !important;
+                    width: 280px !important;
+                    height: 100vh !important;
+                    z-index: 99999 !important;
+                    background: #0b0d10 !important;
+                    border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
+                    border-radius: 0 !important;
+                    padding: 2rem 1.5rem !important;
+                    overflow-y: auto !important;
+                    transform: translateX(-100%) !important;
+                    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+                    box-shadow: 8px 0 32px rgba(0, 0, 0, 0.5) !important;
+                }
+                body.nav-open .sidebar {
+                    transform: translateX(0) !important;
+                }
+                
+                /* Backdrop Overlay */
+                .nav-backdrop {
+                    position: fixed !important;
+                    top: 0 !important;
+                    left: 0 !important;
+                    width: 100vw !important;
+                    height: 100vh !important;
+                    background: rgba(0, 0, 0, 0.6) !important;
+                    backdrop-filter: blur(4px) !important;
+                    -webkit-backdrop-filter: blur(4px) !important;
+                    z-index: 99998 !important;
+                    opacity: 0 !important;
+                    visibility: hidden !important;
+                    transition: opacity 0.3s ease, visibility 0.3s ease !important;
+                }
+                body.nav-open .nav-backdrop {
+                    opacity: 1 !important;
+                    visibility: visible !important;
+                }
+            }
+            
+            /* Tablet Landscape/Portrait Optimization (Pads) */
+            @media (min-width: 768px) and (max-width: 1199px) {
+                .app-workspace {
+                    display: grid !important;
+                    grid-template-columns: 320px 1fr !important;
+                    gap: 1.25rem !important;
+                }
+                .left-column {
+                    grid-column: 1 !important;
+                }
+                .right-column, .cup-plot-panel {
+                    grid-column: 1 !important;
+                }
+                .middle-column, .center-column {
+                    grid-column: 2 !important;
+                    grid-row: 1 / span 2 !important;
+                    position: sticky !important;
+                    top: 1.25rem !important;
+                    height: fit-content !important;
+                    display: flex !important;
+                    flex-direction: column !important;
+                    gap: 1.25rem !important;
+                }
+                .framing-quote {
+                    max-width: 250px !important;
+                    font-size: 0.8rem !important;
+                }
+            }
+            
+            /* Mobile Portrait Optimization (Handies) */
+            @media (max-width: 767px) {
+                .app-workspace {
+                    display: flex !important;
+                    flex-direction: column !important;
+                    gap: 1.25rem !important;
+                }
+                .middle-column, .center-column {
+                    order: 1 !important;
+                }
+                .left-column {
+                    order: 2 !important;
+                }
+                .right-column, .cup-plot-panel {
+                    order: 3 !important;
+                }
+                body {
+                    padding: 1rem !important;
+                }
+                .logo-area h1 {
+                    font-size: 1.6rem !important;
+                }
+                .framing-quote {
+                    display: none !important;
+                }
+                canvas {
+                    max-width: 100% !important;
+                    height: auto !important;
+                }
+                .workspace-grid {
+                    display: flex !important;
+                    flex-direction: column !important;
+                }
+                .visualizer-column {
+                    order: 1 !important;
+                }
+                .controls-column {
+                    order: 2 !important;
+                }
+            }
+        `;
+        const head = document.head || (document.getElementsByTagName ? document.getElementsByTagName("head")[0] : null);
+        if (head && head.appendChild) {
+            head.appendChild(style);
+        }
+    }
+}
+
+if (typeof document !== "undefined") {
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", setupMobileMenu);
+    } else {
+        setupMobileMenu();
+    }
+}

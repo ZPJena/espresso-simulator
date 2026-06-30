@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Strawberry Drying Simulator - TC I Lecture 5</title>
+    <link rel="stylesheet" href="drying_style.css?v=1.0.1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="logo-area">
+                <span class="badge">TC I Lecture 5</span>
+                <h1>Strawberry Drying Simulator</h1>
+                <div class="subtitle">Transport phenomena & boundary layer bottleneck explorer</div>
+            </div>
+            <div class="framing-quote">
+                "The mass-loss curve tells us that drying is slow. The hidden fields tell us why it is slow."
+            </div>
+        </header>
+
+        <!-- Main Workspace -->
+        <main class="app-workspace">
+            <!-- Sidebar Navigation -->
+            <aside class="sidebar glass-card">
+                <h2>🔬 Simulators</h2>
+
+                <div class="nav-group">
+                    <h3>Fluid & Transport</h3>
+                    <a href="eq_navier.html" class="eq-nav-btn" id="nav-eq-navier">Navier-Stokes (L2)</a>
+                    <a href="eq_stokes.html" class="eq-nav-btn" id="nav-eq-stokes">Stokes Settling (L17)</a>
+                    <a href="eq_ergun.html" class="eq-nav-btn" id="nav-eq-ergun">Ergun Porous Flow (L12/13)</a>
+                </div>
+
+                <div class="nav-group">
+                    <h3>Mass Transfer</h3>
+                    <a href="eq_twofilm.html" class="eq-nav-btn" id="nav-eq-twofilm">Two-Film Theory (L7/12)</a>
+                    <a href="eq_mccabe.html" class="eq-nav-btn" id="nav-eq-mccabe">McCabe-Thiele (L11)</a>
+                    <a href="eq_adsorption.html" class="eq-nav-btn" id="nav-eq-adsorption">Adsorption Isotherms (L16)</a>
+                </div>
+
+                <div class="nav-group">
+                    <h3>Kinetics & Reactors</h3>
+                    <a href="eq_butler.html" class="eq-nav-btn" id="nav-eq-butler">Butler-Volmer (L3)</a>
+                    <a href="eq_selectivity.html" class="eq-nav-btn" id="nav-eq-selectivity">Reactor Selectivity (L8)</a>
+                    <a href="eq_hatta.html" class="eq-nav-btn" id="nav-eq-hatta">Hatta Number (L7)</a>
+                    <a href="eq_thiele.html" class="eq-nav-btn" id="nav-eq-thiele">Thiele Modulus (L6/7)</a>
+                    <a href="eq_crystallization.html" class="eq-nav-btn" id="nav-eq-crystallization">Crystallization (L14/15)</a>
+                </div>
+
+                <div class="nav-group">
+                    <h3>Applications</h3>
+                    <a href="index.html" class="eq-nav-btn" id="nav-app-espresso">☕ Espresso</a>
+                    <a href="pizza.html" class="eq-nav-btn" id="nav-app-pizza">🍕 Pizza Conduction</a>
+                    <a href="mixer.html" class="eq-nav-btn" id="nav-app-mixer">🌀 Coffee Stirring</a>
+                    <a href="reactor.html" class="eq-nav-btn" id="nav-app-reactor">📱 Phone Heat</a>
+                    <a href="cooling.html" class="eq-nav-btn" id="nav-app-cooling">❄️ Thermos Design</a>
+                    <a href="drying.html" class="eq-nav-btn active" id="nav-app-drying">🍓 Strawberry Drying</a>
+                </div>
+            </aside>
+
+            <!-- Left Column: Controls & Guided Tasks -->
+            <div class="left-column">
+                <!-- Process Parameters Card -->
+                <section class="control-panel glass-card">
+                    <h2><span class="icon">⚙️</span> Drying Parameters</h2>
+                    
+                    <div class="control-group">
+                        <div class="slider-header">
+                            <label for="param-tair">Air Temperature (T<sub>air</sub>)</label>
+                            <span class="slider-value" id="val-tair">60 °C</span>
+                        </div>
+                        <input type="range" id="param-tair" min="30" max="90" step="1" value="60">
+                        <div class="slider-labels">
+                            <span>30°C</span>
+                            <span>60°C</span>
+                            <span>90°C</span>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <div class="slider-header">
+                            <label for="param-rhair">Relative Humidity (RH<sub>air</sub>)</label>
+                            <span class="slider-value" id="val-rhair">0.20</span>
+                        </div>
+                        <input type="range" id="param-rhair" min="0.05" max="0.80" step="0.01" value="0.20">
+                        <div class="slider-labels">
+                            <span>5%</span>
+                            <span>20%</span>
+                            <span>80%</span>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <div class="slider-header">
+                            <label for="param-kevap">Blowing Air Strength / K<sub>evap</sub></label>
+                            <span class="slider-value" id="val-kevap">2.0e-4 m/s</span>
+                        </div>
+                        <input type="range" id="param-kevap" min="-8" max="-2" step="0.1" value="-3.7">
+                        <div class="slider-labels">
+                            <span>1e-8 (Very low)</span>
+                            <span>2e-4 (Def)</span>
+                            <span>1e-2 (High)</span>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <div class="slider-header">
+                            <label for="param-dbulk">Bulk Diffusivity (D<sub>bulk</sub>)</label>
+                            <span class="slider-value" id="val-dbulk">2.0e-10 m²/s</span>
+                        </div>
+                        <input type="range" id="param-dbulk" min="-12" max="-8" step="0.1" value="-9.7">
+                        <div class="slider-labels">
+                            <span>1e-12 (Slow)</span>
+                            <span>2e-10 (Def)</span>
+                            <span>1e-8 (Fast)</span>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <div class="slider-header">
+                            <label for="param-radius">Strawberry Radius (R)</label>
+                            <span class="slider-value" id="val-radius">10 mm</span>
+                        </div>
+                        <input type="range" id="param-radius" min="5" max="20" step="1" value="10">
+                        <div class="slider-labels">
+                            <span>5 mm</span>
+                            <span>10 mm</span>
+                            <span>20 mm</span>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <div class="slider-header">
+                            <label for="param-time">Drying Duration</label>
+                            <span class="slider-value" id="val-time">3.0 h</span>
+                        </div>
+                        <input type="range" id="param-time" min="1" max="6" step="0.5" value="3">
+                        <div class="slider-labels">
+                            <span>1 h</span>
+                            <span>3 h</span>
+                            <span>6 h</span>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="param-mode">Diffusivity Mode</label>
+                        <select id="param-mode">
+                            <option value="constant" selected>Constant Diffusivity</option>
+                            <option value="dependent">Moisture-Dependent (Crust)</option>
+                        </select>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button id="btn-start" class="btn btn-primary">▶ Run Simulation</button>
+                        <button id="btn-reset" class="btn btn-secondary">🔄 Reset</button>
+                    </div>
+                </section>
+
+                <!-- Student Task Panel -->
+                <section class="task-panel glass-card">
+                    <h2><span class="icon">🏆</span> Guided Student Tasks</h2>
+                    
+                    <div class="control-group" style="margin-bottom: 0.75rem;">
+                        <label for="select-task" style="font-size: 0.9rem; font-weight: 600; display: block; margin-bottom: 0.5rem;">Select Assignment:</label>
+                        <select id="select-task">
+                            <option value="task0">Task 0 — Reference case</option>
+                            <option value="task1">Task 1 — Drying Case A</option>
+                            <option value="task2">Task 2 — Drying Case B</option>
+                            <option value="task3">Task 3 — Drying Case C (Air Speed Study)</option>
+                            <option value="task4">Task 4 — Drying Case D (Size Study)</option>
+                            <option value="task5">Task 5 — Drying Case E (Diffusivity Mode Study)</option>
+                        </select>
+                    </div>
+                    
+                    <div id="task-desc" class="task-desc">
+                        Task 0: Run the reference case once and record mass loss and drying rate.
+                    </div>
+
+                    <div class="task-actions" style="margin-top: 1rem; display: flex; gap: 0.5rem;">
+                        <button id="btn-show-experiment" class="btn btn-secondary active">Show Only Experiment</button>
+                        <button id="btn-reveal-hidden" class="btn btn-primary">Reveal Hidden Fields</button>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Center Column: Visualizer & Theory -->
+            <div class="center-column">
+                <!-- Experimental Observable Panel -->
+                <section class="observable-panel glass-card">
+                    <h2><span class="icon">🔬</span> Experimental Observable (Lab Scale)</h2>
+                    <div class="observables-row">
+                        <div class="obs-item">
+                            <span class="obs-label">Elapsed Time:</span>
+                            <span id="stat-time" class="obs-val mono">0.0 h</span>
+                        </div>
+                        <div class="obs-item">
+                            <span class="obs-label">Avg Moisture (w):</span>
+                            <span id="stat-moisture" class="obs-val mono">90.0 %</span>
+                        </div>
+                        <div class="obs-item">
+                            <span class="obs-label">Strawberry Mass:</span>
+                            <span id="stat-mass" class="obs-val mono">4.19 g</span>
+                        </div>
+                        <div class="obs-item">
+                            <span class="obs-label">Drying Rate:</span>
+                            <span id="stat-rate" class="obs-val mono">0.00 g/h</span>
+                        </div>
+                    </div>
+                    <div class="obs-status-box">
+                        <span class="status-title">Product State:</span>
+                        <span id="stat-status" class="status-badge state-wet">Surface Wet</span>
+                    </div>
+                </section>
+
+                <!-- Hidden Fields Panel -->
+                <section id="hidden-fields-card" class="visualizer-panel glass-card">
+                    <h2><span class="icon">👁️</span> Simulation Hidden Fields (Internal Gradients)</h2>
+                    
+                    <!-- Locked Overlay -->
+                    <div id="locked-overlay" class="locked-overlay">
+                        <div class="locked-message">
+                            <span class="lock-icon" style="font-size: 3rem; display: block; margin-bottom: 0.5rem;">🔒</span>
+                            <h3>Hidden Fields Locked</h3>
+                            <p>Click "Reveal Hidden Fields" in the tasks panel to inspect internal gradients.</p>
+                        </div>
+                    </div>
+
+                    <!-- Visualizer Controls -->
+                    <div class="visualizer-controls" id="vis-controls">
+                        <div class="view-selector">
+                            <button class="view-btn active" data-field="moisture">💧 Moisture field</button>
+                            <button class="view-btn" data-field="temp">🌡️ Temperature field</button>
+                            <button class="view-btn" data-field="bulkflux">➡️ Bulk moisture flux</button>
+                            <button class="view-btn" data-field="evapflux">📤 Evaporation flux</button>
+                            <button class="view-btn" data-field="diffusivity">📉 Diffusivity field</button>
+                        </div>
+
+                        <!-- Canvas and Scale -->
+                        <div class="canvas-wrapper">
+                            <canvas id="strawberry-canvas" width="300" height="300"></canvas>
+                            <!-- Scale bar -->
+                            <div class="scale-bar">
+                                <span id="scale-max">90%</span>
+                                <div class="scale-gradient" id="scale-gradient"></div>
+                                <span id="scale-min">15%</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Playback Scrub Slider -->
+                        <div class="playback-container">
+                            <div class="playback-header">
+                                <label for="playback-time">Timeline Scrub:</label>
+                                <span id="val-playback">0.0 h</span>
+                            </div>
+                            <div class="playback-slider-row">
+                                <button id="btn-play" class="btn btn-play">▶ Play</button>
+                                <input type="range" id="playback-time" min="0" max="200" step="1" value="0">
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Theory and Governing Equations -->
+                <section class="theory-panel glass-card">
+                    <h2><span class="icon">📐</span> Theory & Governing Equations</h2>
+                    <div class="theory-grid">
+                        <div class="theory-subcard">
+                            <div class="eq-display">
+                                <span class="eq-label">Bulk moisture flux</span>
+                                <span class="eq-formula">J<sub>bulk</sub> = &minus;D<sub>eff</sub> &nabla;w</span>
+                            </div>
+                            <p class="theory-desc">Moisture transport inside the solid is driven by diffusion down the moisture gradient, limited by internal diffusivity \(D_{\text{eff}}\).</p>
+                        </div>
+                        <div class="theory-subcard">
+                            <div class="eq-display">
+                                <span class="eq-label">Surface evaporation</span>
+                                <span class="eq-formula">N<sub>evap</sub> = K<sub>evap</sub> (w<sub>surf</sub> &minus; w<sub>eq</sub>)</span>
+                            </div>
+                            <p class="theory-desc">Water escapes the surface into the air, driven by the concentration difference and limited by air velocity coefficient \(K_{\text{evap}}\).</p>
+                        </div>
+                        <div class="theory-subcard">
+                            <div class="eq-display">
+                                <span class="eq-label">Bottleneck Criteria</span>
+                                <span class="eq-formula">Bi<sub>m</sub> = K<sub>evap</sub> R / D<sub>eff</sub></span>
+                            </div>
+                            <p class="theory-desc">Bi &lt; 0.1: Surface-limited (slow boundary escape). Bi &gt; 10: Bulk-diffusion-limited (surface dries, core remains wet).</p>
+                        </div>
+                        <div class="theory-subcard">
+                            <div class="eq-display">
+                                <span class="eq-label">Diffusion Time Scale</span>
+                                <span class="eq-formula">t<sub>diff</sub> &sim; R² / D<sub>bulk</sub></span>
+                            </div>
+                            <p class="theory-desc">The time required for internal moisture to travel out scales quadratically with radius \(R\). Cutting in half reduces drying time by 4x!</p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Right Column: Real-time Curves & Reflections -->
+            <div class="right-column">
+                <!-- Live curves -->
+                <section class="analytics glass-card">
+                    <h2><span class="icon">📈</span> Live Experimental Curves</h2>
+                    <div class="chart-wrapper">
+                        <h3 class="chart-title">Average Moisture vs. Time</h3>
+                        <canvas id="canvas-chart-moisture" width="340" height="150"></canvas>
+                    </div>
+                    <div class="chart-wrapper" style="margin-top: 1rem;">
+                        <h3 class="chart-title">Drying Rate vs. Time</h3>
+                        <canvas id="canvas-chart-rate" width="340" height="150"></canvas>
+                    </div>
+                </section>
+
+                <!-- Student Reflection Box -->
+                <section id="reflection-card" class="reflection-card glass-card" style="transition: transform 0.3s ease;">
+                    <h2><span class="icon">📝</span> Student Bottleneck Prediction</h2>
+                    
+                    <!-- Prediction Mode (Before seeing hidden fields) -->
+                    <div id="prediction-mode-view">
+                        <div class="reflection-group">
+                            <label for="prediction-text">Without seeing the hidden fields, based only on the mass/rate curves, what is your initial decision or what would you change?</label>
+                            <textarea id="prediction-text" rows="3" placeholder="e.g. blow harder, heat the air, cut in half..."></textarea>
+                        </div>
+                        <div class="reflection-group" style="margin-top: 0.75rem;">
+                            <label>What is your guess for the drying bottleneck?</label>
+                            <div class="radio-group">
+                                <label><input type="radio" name="guess-bottleneck" value="surface"> Surface (air-side)</label>
+                                <label><input type="radio" name="guess-bottleneck" value="bulk"> Bulk (internal diffusion)</label>
+                                <label><input type="radio" name="guess-bottleneck" value="both"> Both</label>
+                                <label><input type="radio" name="guess-bottleneck" value="unclear"> Unclear</label>
+                            </div>
+                        </div>
+                        <button id="btn-submit-prediction" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">🔒 Submit Prediction to Unlock Hidden Fields</button>
+                    </div>
+
+                    <!-- Reflection Mode (After seeing hidden fields) -->
+                    <div id="reflection-mode-view" style="display: none;">
+                        <div class="user-prediction-display" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 0.75rem; border-radius: 8px; font-size: 0.85rem; margin-bottom: 0.75rem; line-height: 1.4;">
+                            <p><strong>Your guess:</strong> <span id="display-user-guess" style="color: var(--accent-pink); font-weight: bold;">-</span></p>
+                            <p style="margin-top: 0.25rem;"><strong>Your reasoning:</strong> <span id="display-user-reasoning" style="font-style: italic; color: var(--text-secondary);">-</span></p>
+                        </div>
+                        <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+                            <button id="btn-edit-prediction" class="btn btn-secondary" style="flex: 1;">✏️ Edit Guess</button>
+                            <button id="btn-show-stats" class="btn btn-secondary" style="display: flex; align-items: center; gap: 0.3rem;"><span class="icon">📊</span> Stats</button>
+                        </div>
+                    </div>
+                    
+                    <div id="reflection-feedback" class="reflection-feedback" style="display: none; margin-top: 0.5rem; text-align: center; color: var(--accent-green); font-size: 0.85rem; font-weight: 600;">
+                        Prediction saved to workbook!
+                    </div>
+                    <div style="margin-top: 1rem; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 0.75rem; text-align: right;">
+                        <button id="btn-clear-workbook" class="btn-text" style="font-size: 0.75rem; color: var(--text-secondary); background: none; border: none; cursor: pointer; text-decoration: underline; transition: color 0.2s;">Reset All Workbook Data</button>
+                    </div>
+                </section>
+
+                <!-- Workbook Summary & Submission Card -->
+                <section id="workbook-summary-card" class="glass-card" style="margin-top: 1.5rem;">
+                    <h2><span class="icon">📋</span> Student Workbook Summary</h2>
+                    <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.75rem; line-height: 1.4;">
+                        Complete tasks 1 to 5, make predictions, and record reflections. When done, copy or export your report to hand in to your teacher.
+                    </p>
+                    
+                    <div id="workbook-summary-table" style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem;">
+                        <!-- Dynamic task status items will be rendered here -->
+                    </div>
+
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button id="btn-export-workbook" class="btn btn-primary" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 0.3rem;"><span class="icon">📥</span> Export</button>
+                        <button id="btn-copy-workbook" class="btn btn-secondary" style="display: flex; align-items: center; justify-content: center; gap: 0.3rem;"><span class="icon">📋</span> Copy</button>
+                    </div>
+                    <div id="export-feedback" style="display: none; text-align: center; font-size: 0.8rem; color: var(--accent-green); font-weight: 600; margin-top: 0.5rem;">
+                        Report copied to clipboard!
+                    </div>
+                </section>
+
+                <!-- Debug console log -->
+                <footer class="app-footer glass-card" style="margin-top: 1rem; padding: 1rem;">
+                    <div class="debug-title" style="font-size: 0.8rem; font-weight: bold; margin-bottom: 0.4rem; color: var(--text-secondary);">⚙️ Logger Console</div>
+                    <pre id="debug-console" class="debug-console" style="margin: 0; font-family: var(--font-mono); font-size: 0.75rem; white-space: pre-wrap; word-wrap: break-word; max-height: 80px; overflow-y: auto; color: var(--text-secondary);">[SYSTEM] Ready to simulate. Select a task and click Run.</pre>
+                </footer>
+            </div>
+        </main>
+    </div>
+
+    <script src="drying_script.js?v=1.0.1"></script>
+    <!-- MathJax rendering -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+    <!-- Statistics Modal Overlay -->
+    <div id="stats-modal" class="stats-modal-overlay" style="display: none;">
+        <div class="stats-modal-card glass-card">
+            <header class="stats-modal-header">
+                <h2><span class="icon">📊</span> FSU Jena Class Guess Statistics</h2>
+                <button id="btn-close-stats" class="btn-close">&times;</button>
+            </header>
+            <p class="stats-modal-desc">Compare your prediction with FSU Jena students' cumulative answers from past semesters. Many students make intuitive mistakes before seeing the hidden fields!</p>
+            
+            <div class="stats-comparison-container">
+                <div class="your-guess-box">
+                    <span>Your Guess:</span>
+                    <strong id="stats-your-guess">-</strong>
+                </div>
+            </div>
+
+            <div class="stats-chart-container" id="stats-chart">
+                <!-- Dynamic bars will be rendered here -->
+            </div>
+
+            <div class="stats-didactic-takeaway" id="stats-takeaway">
+                <!-- Takeaway lesson -->
+            </div>
+            
+            <button id="btn-close-stats-ok" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Got it!</button>
+        </div>
+    </div>
+
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</body>
+</html>
